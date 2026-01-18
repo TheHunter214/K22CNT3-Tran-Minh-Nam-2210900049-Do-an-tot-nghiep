@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}KUNCINEMA{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="header">
+    <div class="logo-section">
+      <div class="logo">
+        <i class="fas fa-film"></i>
+        <span>KUNCINEMA</span>
+      </div>
+      <div class="logo-tagline">Trải nghiệm điện ảnh tuyệt vời</div>
+    </div>
+    <nav class="header-nav">
+      <a href="{{ url_for('home') }}" class="nav-link">
+        <i class="fas fa-home"></i> Trang Chủ
+      </a>
+      <a href="{{ url_for('upcoming') }}" class="nav-link">
+        <i class="fas fa-calendar-alt"></i> Phim Sắp Chiếu
+      </a>
+      {% if session.get('username') %}
+        <span class="nav-user">
+          <i class="fas fa-user-circle"></i> {{ session.username }}
+        </span>
+        <a href="{{ url_for('logout') }}" class="nav-link nav-logout">
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="nav-link">
+          <i class="fas fa-sign-in-alt"></i> Đăng nhập
+        </a>
+        <a href="{{ url_for('register') }}" class="nav-link nav-auth">
+          <i class="fas fa-user-plus"></i> Đăng ký
+        </a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>
+            <i class="fas fa-film"></i> Về KUNCINEMA
+          </h3>
+          <p>Nền tảng đặt vé xem phim trực tuyến hàng đầu, mang đến trải nghiệm giải trí tuyệt vời cho khán giả Việt Nam.</p>
+        </div>
+        <div class="footer-section">
+          <h3>
+            <i class="fas fa-phone"></i> Liên Hệ
+          </h3>
+          <ul>
+            <li>Hotline: <a href="tel:1900123456">1900 123 456</a></li>
+            <li>Email: <a href="mailto:support@kuncinema.com">support@kuncinema.com</a></li>
+            <li>Địa chỉ: 123 Nguyễn Huệ, TP.HCM</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>
+            <i class="fas fa-link"></i> Liên Kết
+          </h3>
+          <ul>
+            <li><a href="#">Tuyên bố bảo mật</a></li>
+            <li><a href="#">Điều khoản dịch vụ</a></li>
+            <li><a href="#">Hỗ trợ khách hàng</a></li>
+            <li><a href="#">Cơ hội sự nghiệp</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>
+            <i class="fas fa-share-alt"></i> Theo Dõi
+          </h3>
+          <div class="social-links">
+            <a href="https://www.facebook.com/nam.minh.650872/" class="social-btn facebook" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/cgod.forkun/" class="social-btn instagram" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@namkun214" class="social-btn tiktok" title="TikTok">
+              <i class="fab fa-tiktok"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 KUNCINEMA. Tất cả quyền được bảo lưu.</p>
+    </div>
+    
+  </footer>
+</body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+{% block scripts %}{% endblock %}
+</html>

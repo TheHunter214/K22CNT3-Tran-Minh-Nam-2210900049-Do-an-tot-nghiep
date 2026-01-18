@@ -1,0 +1,95 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ movie.title }} - Chi Tiết | KUNCINEMA{% endblock %}
+
+{% block content %}
+<div class="movie-detail-container">
+    <div class="movie-detail">
+        <!-- POSTER -->
+        <div class="movie-poster">
+            <img src="{{ url_for('static', filename='images/' + movie.poster_image) }}" alt="{{ movie.title }}">
+        </div>
+        
+        <!-- THÔNG TIN PHIM -->
+        <div class="movie-content">
+            <h1 class="movie-title">{{ movie.title }}</h1>
+            
+            <!-- META THÔNG TIN -->
+            <div class="movie-meta">
+                <div class="meta-badge">
+                    <i class="fas fa-film"></i> {{ movie.genre.split(',')[0] | trim }}
+                </div>
+                <div class="meta-badge">
+                    <i class="fas fa-hourglass-half"></i> {{ movie.duration }}
+                </div>
+                <div class="meta-badge">
+                    <i class="fas fa-user-alt"></i>
+                    <span class="age-rating-badge">{{ movie.age_rating }}</span>
+                </div>
+            </div>
+            
+            <!-- CHI TIẾT PHIM -->
+            <div class="movie-details-box">
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-user-tie"></i> Đạo Diễn:</div>
+                    <div class="detail-value">{{ movie.director }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-masks-theater"></i> Diễn Viên:</div>
+                    <div class="detail-value">{{ movie.cast }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-book-open"></i> Thể Loại:</div>
+                    <div class="detail-value">{{ movie.genre }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-calendar"></i> Khởi Chiếu:</div>
+                    <div class="detail-value">{{ movie.release_date }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-globe"></i> Ngôn Ngữ:</div>
+                    <div class="detail-value">{{ movie.language }}</div>
+                </div>
+            </div>
+            
+            <!-- ĐÁNH GIÁ -->
+            <div class="movie-rating-box">
+                <div class="rating-display">
+                    <div class="rating-number">{{ movie.rating }}</div>
+                    <div class="rating-label">/ 10</div>
+                </div>
+                <div class="rating-text">
+                    <strong>Đánh giá từ khán giả:</strong><br>
+                    Phim nhận được rất nhiều lời khen từ cộng đồng yêu thích phim. Đây là một bộ phim không nên bỏ lỡ!
+                </div>
+            </div>
+            
+            <!-- MÔ TẢ -->
+            <div class="movie-description">
+                <strong style="color: #fff; display: block; margin-bottom: 8px;">Nội Dung:</strong>
+                {{ movie.description }}
+            </div>
+            
+            <!-- GIÁ VÉ -->
+            <div style="background: linear-gradient(90deg, rgba(107,226,255,0.1), rgba(255,107,107,0.05)); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid rgba(107,226,255,0.2);">
+                <div style="font-size: 13px; color: var(--muted); margin-bottom: 6px;">Giá vé từ</div>
+                <div style="font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: 1px;">{{ movie.price }}</div>
+            </div>
+            
+            <!-- NÚT HÀNH ĐỘNG -->
+            <div class="movie-actions">
+                <a href="{{ url_for('booking', movie_id=movie.id) }}" class="btn-book-ticket">
+                    <i class="fas fa-ticket-alt"></i> Đặt Vé Ngay
+                </a>
+                <a href="{{ url_for('home') }}" class="btn-back-to-home">
+                    <i class="fas fa-arrow-left"></i> Quay Về
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie.css') }}">
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block title %}Phim Sắp Chiếu | KUNCINEMA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>🎬 Phim Sắp Chiếu</h1>
+        <p>Danh sách các bộ phim chưa ra mắt.</p>
+        <div class="movie-list">
+            <link rel="stylesheet" href="/static/css/upcoming.css">
+            {% for movie in movies %}
+            <div class="movie-card">
+                <!-- Poster -->
+                <a href="{{ url_for('movie_detail', movie_id=movie.id) }}">
+                    <img 
+                        src="{{ url_for('static', filename='images/' ~ (movie.poster_image or 'movie9.jpg')) }}" 
+                        alt="{{ movie.title }}"
+                    >
+                </a>
+                <div class="movie-info">
+                    <h3>
+                        <a href="{{ url_for('movie_detail', movie_id=movie.id) }}">
+                            {{ movie.title }}
+                        </a>
+                    </h3>
+
+                    <p class="muted">
+                        📅 Khởi chiếu: {{ movie.release_date.strftime('%d/%m/%Y') if movie.release_date else '' }}
+                    </p>
+
+                    <p>🎭 Thể loại: {{ movie.genre }}</p>
+                    <p>💰 Giá vé dự kiến: {{ movie.price }}₫</p>
+
+                    <!-- Chưa cho đặt vé -->
+                    <button class="btn-disabled" disabled>
+                        ⏳ Chưa mở đặt vé
+                    </button>
+                </div>
+            </div>
+            
+            {% else %}
+                <p>Hiện chưa có phim sắp chiếu.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

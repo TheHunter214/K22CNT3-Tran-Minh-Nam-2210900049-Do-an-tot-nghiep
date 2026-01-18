@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+{% block title %}Trang Chủ - KUNCINEMA{% endblock %}
+
+{% block content %}
+<!-- HERO BANNER -->
+<section class="hero">
+    <img class="hero-bg-image" src="{{ url_for('static', filename='images/nen.jpg') }}" alt="Cinema Background">
+    <div class="hero-background"></div>
+    <div class="hero-glow-top"></div>
+    <div class="hero-glow-bottom"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">🎭 Trải Nghiệm Rạp Phim Chuẩn Quốc Tế</h1>
+        <p class="hero-subtitle">Âm thanh Dolby Atmos • Màn hình 4K • Ghế reclining cao cấp</p>
+        <button class="hero-btn">
+            <i class="fas fa-ticket-alt"></i> Đặt Vé Ngay
+        </button>
+    </div>
+    <div class="hero-floating-icons">
+        <span class="float-icon">🎬</span>
+        <span class="float-icon">🎭</span>
+        <span class="float-icon">🍿</span>
+        <span class="float-icon">⭐</span>
+    </div>
+</section>
+
+<!-- PROMOTION BANNER -->
+<section class="promo-banner">
+    <div class="promo-card promo-card-1">
+        <div class="promo-icon-wrapper">
+            <span class="promo-icon">🎫</span>
+        </div>
+        <h3>Vé Ưu Đãi</h3>
+        <p class="promo-text">Giảm tới 30% cho vé buổi chiều</p>
+        <div class="promo-badge">HOT</div>
+    </div>
+    <div class="promo-card promo-card-2">
+        <div class="promo-icon-wrapper">
+            <span class="promo-icon">🍿</span>
+        </div>
+        <h3>Combo Siêu Tiết Kiệm</h3>
+        <p class="promo-text">Vé + Bắp + Nước Cam chỉ 165k</p>
+        <div class="promo-badge star">★ TIẾT KIỆM ★</div>
+    </div>
+    <div class="promo-card promo-card-3">
+        <div class="promo-icon-wrapper">
+            <span class="promo-icon">⭐</span>
+        </div>
+        <h3>Thành Viên VIP</h3>
+        <p class="promo-text">Tích điểm, hoàn tiền, ưu tiên booking</p>
+        <div class="promo-badge new">NEW</div>
+    </div>
+    <div class="promo-card promo-card-4">
+        <div class="promo-icon-wrapper">
+            <span class="promo-icon">💳</span>
+        </div>
+        <h3>Thanh Toán Linh Hoạt</h3>
+        <p class="promo-text">Trả góp 0% + Hoàn cashback 10%</p>
+        <div class="promo-badge">KHUYẾN MÃI</div>
+    </div>
+</section>
+
+<section class="movies">
+    <div class="movies-header">
+        <h2>🎥 Phim Đang Chiếu Tại Rạp</h2>
+        <a href="{{ url_for('upcoming') }}" class="view-all-btn">Xem Tất Cả →</a>
+    </div>
+
+    <div class="movie-list">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="movie-image" style="text-decoration:none;display:block;cursor:pointer">
+                <img src="{{ url_for('static', filename='images/' ~ (movie.poster_image or 'movie1.jpg')) }}" alt="{{ movie.title }}">
+                <div class="movie-rating">⭐ {{ movie.rating }}</div>
+                {% if loop.index0 < 3 %}
+                <div class="movie-badge">TRENDING</div>
+                {% endif %}
+            </a>
+            <div class="movie-info">
+                <h3>{{ movie.title }}</h3>
+                <p class="movie-details">
+                    <span class="duration"><i class="fas fa-hourglass-half"></i> {{ movie.duration }} phút</span><br>
+                    <span class="genre"><i class="fas fa-mask"></i> {{ movie.genre }}</span>
+                </p>
+                <p class="movie-rating-text">Độ tuổi: <span class="age-badge">{{ movie.age_rating }}</span></p>
+                <div class="movie-actions">
+                    <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn-book">XEM NGAY</a>
+                    <button class="btn-favorite"><i class="fas fa-heart"></i></button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p>Chưa có phim để hiển thị.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

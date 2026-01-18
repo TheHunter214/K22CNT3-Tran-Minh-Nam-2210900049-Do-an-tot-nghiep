@@ -1,0 +1,102 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+
+<div class="booking-container">
+
+    <!-- HEADER -->
+    <div class="booking-header">
+        <div class="movie-poster">
+            <img src="{{ url_for('static', filename='images/' + movie.poster_image) }}" alt="{{ movie.title }}">
+            <script src="/static/js/booking.js"></script>
+        </div>
+        <div class="booking-info">
+            <h2>{{ movie.title }}</h2>
+            <div class="details">
+                <span>⭐ {{ movie.rating or '8.5' }}</span>
+                <span>⏱ {{ movie.duration }} phút</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="booking-layout">
+
+        <!-- MAIN -->
+        <div class="booking-main">
+
+            <!-- SUẤT CHIẾU -->
+            <div class="booking-section">
+                <div class="section-title">🕒 Chọn Suất Chiếu</div>
+                <div class="showtimes-grid">
+                    {% for s in showtimes %}
+                    <button class="showtime-btn"
+                        onclick="selectShowtime(this)"
+                        data-id="{{ s.id }}"
+                        data-price="{{ s.price }}"
+                        data-room="{{ s.screen_name }}"
+                        data-cinema="{{ s.cinema_name }}">
+                        <div class="time-hour">{{ s.start_time.strftime('%H:%M') }}</div>
+                        <div class="time-info">{{ s.start_time.strftime('%d/%m') }}</div>
+                    </button>
+                    {% endfor %}
+                </div>
+                <p id="room-info" class="success-badge" style="display:none;"></p>
+            </div>
+
+            <!-- GHẾ -->
+            <div class="booking-section">
+                <div class="section-title">💺 Chọn Ghế</div>
+                <div class="screen">MÀN HÌNH</div>
+                <div id="seats-grid" class="seats-grid">
+                    <p style="grid-column:1/-1;text-align:center;color:#777">
+                        Vui lòng chọn suất chiếu
+                    </p>
+                </div>
+            </div>
+
+            <!-- COMBO -->
+            <div class="booking-section">
+                <div class="section-title">🍿 Đồ ăn & Combo</div>
+                <div id="combo-list" class="combo-list">
+                    <!-- JS render -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="booking-sidebar">
+            <div class="order-summary">
+                <div class="summary-title">🧾 Tóm Tắt Đơn Hàng</div>
+
+                <div class="summary-item">
+                    <span id="bill-seat-text">Vé (0 ghế)</span>
+                    <span id="bill-seat-price">0₫</span>
+                </div>
+
+                <div class="summary-item">
+                    <span>Combo</span>
+                    <span id="bill-combo-price">0₫</span>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-item total">
+                    <span>Tổng cộng</span>
+                    <span id="total-amount">0₫</span>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn-payment" onclick="checkout()">THANH TOÁN</button>
+                    <button class="btn-back" onclick="history.back()">Quay về</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

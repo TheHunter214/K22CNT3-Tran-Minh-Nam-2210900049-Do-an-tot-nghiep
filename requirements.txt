@@ -1,0 +1,3 @@
+(use pip to install these if not present)
+Flask
+mysql-connector-python
