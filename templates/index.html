@@ -59,13 +59,13 @@
         <div class="promo-badge">KHUYẾN MÃI</div>
     </div>
 </section>
-
+<!-- MOVIE SHOWCASE -->
 <section class="movies">
     <div class="movies-header">
         <h2>🎥 Phim Đang Chiếu Tại Rạp</h2>
-        <a href="{{ url_for('upcoming') }}" class="view-all-btn">Xem Tất Cả →</a>
+        
     </div>
-
+    
     <div class="movie-list">
         {% for movie in movies %}
         <div class="movie-card">

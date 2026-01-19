@@ -72,9 +72,11 @@
 /* Layout Grid */
 .booking-layout {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 2.5fr 1fr;
     gap: 24px;
+    align-items: start;
 }
+
 
 .booking-section {
     background: linear-gradient(135deg, rgba(11,18,32,0.8), rgba(11,18,32,0.6));
@@ -241,28 +243,123 @@
         position: static;
     } 
 }
+.combo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: all 0.2s ease;
+}
+.combo-info h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.combo-info p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #b0c4de;
+}
+.combo-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.combo-actions button {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(77, 208, 255, 0.15);
+    color: #4dd0ff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.combo-actions button:hover {
+    background: rgba(77, 208, 255, 0.3);
+}
+
+.combo-actions span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #fff;
+}
+
+.price-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4dd0ff;
+}
+
+.combo-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+.combo-left {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.combo-icon {
+    font-size: 32px;
+}
+
+.combo-qty button {
+    width: 30px;
+    height: 30px;
+}
+.combo-qty span {
+    margin: 0 10px;
+    font-weight: 600;
+    color: #fff;
+}
+.btn-disabled svg {
+    fill: var(--muted);
+}
+.btn-disabled span {
+    color: var(--muted);
+}   
 .combo-list {
+    max-height: 280px;        /* giới hạn chiều cao */
+    overflow-y: auto;
+    padding-right: 8px;
+}
+.seats-grid {
+    max-height: 380px;
+    overflow-y: auto;
+}
+.combo-list {
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 6px;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.combo-item {
-    display: flex;
-    gap: 15px;
-    padding: 12px;
-    border: 1px solid #2c5b6e;
+/* Scrollbar đẹp (Chrome / Edge) */
+.combo-list::-webkit-scrollbar {
+    width: 6px;
+}
+.combo-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.combo-list::-webkit-scrollbar-thumb {
+    background: rgba(100, 200, 255, 0.4);
     border-radius: 10px;
-    background: rgba(255,255,255,0.03);
+}
+.combo-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 200, 255, 0.7);
 }
 
-.combo-img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-}
 
-.combo-actions button {
-    width: 30px;
-    height: 30px;
-}
+

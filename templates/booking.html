@@ -8,9 +8,11 @@
     <!-- HEADER -->
     <div class="booking-header">
         <div class="movie-poster">
-            <img src="{{ url_for('static', filename='images/' + movie.poster_image) }}" alt="{{ movie.title }}">
-            <script src="/static/js/booking.js"></script>
+        <img src="{{ url_for('static', filename='images/' + movie.poster_image) }}" alt="{{ movie.title }}">
         </div>
+        <script src="{{ url_for('static', filename='js/booking.js') }}"></script> 
+
+        
         <div class="booking-info">
             <h2>{{ movie.title }}</h2>
             <div class="details">
@@ -62,9 +64,7 @@
                     <!-- JS render -->
                 </div>
             </div>
-
-        </div>
-
+        </div>   
         <!-- SIDEBAR -->
         <div class="booking-sidebar">
             <div class="order-summary">
@@ -76,15 +76,15 @@
                 </div>
 
                 <div class="summary-item">
-                    <span>Combo</span>
-                    <span id="bill-combo-price">0₫</span>
+                    <span>Combo bắp nước</span>
+                    <span id="bill-combo-price" class="fw-bold">0₫</span>
                 </div>
 
                 <div class="summary-divider"></div>
 
                 <div class="summary-item total">
-                    <span>Tổng cộng</span>
-                    <span id="total-amount">0₫</span>
+                    <span>TỔNG CỘNG</span>
+                    <span id="total-amount" style="color: #e74c3c; font-size: 1.5rem;">0₫</span>
                 </div>
 
                 <div class="booking-actions">
@@ -96,7 +96,6 @@
 
     </div>
 </div>
-
 <!-- JS -->
 <script src="{{ url_for('static', filename='js/booking.js') }}"></script>
 {% endblock %}

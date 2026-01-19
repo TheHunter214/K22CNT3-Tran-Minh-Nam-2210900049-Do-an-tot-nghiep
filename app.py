@@ -214,98 +214,46 @@ def api_get_seats(showtime_id):
         "all_seats": all_seats,
         "occupied_seats": occupied
     })
-@app.route('/api/create_booking', methods=['POST'])
-def create_booking():
-    if 'user_id' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
 
-    data = request.json
-    user_id = session['user_id']
-    showtime_id = data['showtime_id']
-    seats = data['seats']  # list seat_id
-
-    if not seats:
-        return jsonify({'error': 'No seats selected'}), 400
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    # Giá vé
-    cur.execute(
-        "SELECT price FROM showtimes WHERE id = %s",
-        (showtime_id,)
-    )
-    price = cur.fetchone()[0]
-    total_price = price * len(seats)
-
-    # Tạo booking
-    cur.execute("""
-        INSERT INTO bookings (user_id, showtime_id, total_price)
-        VALUES (%s, %s, %s)
-    """, (user_id, showtime_id, total_price))
-    booking_id = cur.lastrowid
-
-    # Lưu ghế
-    for seat_id in seats:
-        cur.execute("""
-            INSERT INTO booking_seats (booking_id, seat_id)
-            VALUES (%s, %s)
-        """, (booking_id, seat_id))
-
-    conn.commit()
-
-    return jsonify({
-        'success': True,
-        'booking_id': booking_id
-    })
 @app.route('/api/create_booking', methods=['POST'])
 def api_create_booking():
+    if 'user_id' not in session:
+        return jsonify({"success": False, "error": "Vui lòng đăng nhập"})
+    
     data = request.json
     showtime_id = data.get('showtime_id')
     seats = data.get('seats', [])
-    combos = data.get('combos', {})
-
-    if not showtime_id or not seats:
-        return jsonify({"success": False, "error": "Thiếu dữ liệu"})
+    combos = data.get('combos', {}) # Nhận dictionary {id: qty}
 
     conn = get_db()
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True) # Dùng dictionary để dễ lấy price
 
-    # Lấy giá vé
+    # Tính toán tổng tiền
     cur.execute("SELECT price FROM showtimes WHERE id=%s", (showtime_id,))
-    ticket_price = cur.fetchone()[0]
-
+    ticket_price = cur.fetchone()['price']
     total = ticket_price * len(seats)
 
-    # Tính tiền combo
+
     for combo_id, qty in combos.items():
-        cur.execute("SELECT price FROM combos WHERE id=%s", (combo_id,))
-        combo_price = cur.fetchone()[0]
-        total += combo_price * qty
+        if int(qty) > 0:
+            cur.execute("SELECT price FROM combos WHERE id=%s", (combo_id,))
+            c_price = cur.fetchone()['price']
+            total += c_price * int(qty)
 
-    # Tạo booking
-    cur.execute("""
-        INSERT INTO bookings (user_id, showtime_id, total_price, status)
-        VALUES (%s, %s, %s, 'paid')
-    """, (session.get('user_id'), showtime_id, total))
-
+    # Lưu Booking
+    cur.execute("INSERT INTO bookings (user_id, showtime_id, total_price, status) VALUES (%s, %s, %s, 'paid')",
+                (session['user_id'], showtime_id, total))
     booking_id = cur.lastrowid
 
     # Lưu ghế
-    for seat_id in seats:
-        cur.execute("""
-            INSERT INTO booking_seats (booking_id, seat_id)
-            VALUES (%s, %s)
-        """, (booking_id, seat_id))
+    for s_id in seats:
+        cur.execute("INSERT INTO booking_seats (booking_id, seat_id) VALUES (%s, %s)", (booking_id, s_id))
 
     # Lưu combo
-    for combo_id, qty in combos.items():
-        if qty > 0:
-            cur.execute("""
-                INSERT INTO booking_combos (booking_id, combo_id, quantity)
-                VALUES (%s, %s, %s)
-            """, (booking_id, combo_id, qty))
-
+    for c_id, qty in combos.items():
+        if int(qty) > 0:
+            cur.execute("INSERT INTO booking_combos (booking_id, combo_id, quantity) VALUES (%s, %s, %s)",
+                        (booking_id, c_id, qty))
     conn.commit()
     cur.close()
     conn.close()
@@ -314,16 +262,18 @@ def api_create_booking():
 
 @app.route('/api/combos')
 def api_get_combos():
-    conn = get_db()
-    cur = conn.cursor(dictionary=True)
-
-    cur.execute("SELECT id, name, description, price, image FROM combos")
-    combos = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return jsonify(combos)
+    try:
+        conn = get_db()
+        cur = conn.cursor(dictionary=True)
+        # Truy vấn đúng các cột: id, name, description, price, type
+        cur.execute("SELECT id, name, description, price, type FROM combos")
+        combos = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(combos)
+    except Exception as e:
+        print(f"Lỗi: {e}")
+        return jsonify([])
 
 # ======================
 # PHIM SẮP CHIẾU (Thêm đoạn này vào để sửa lỗi)
