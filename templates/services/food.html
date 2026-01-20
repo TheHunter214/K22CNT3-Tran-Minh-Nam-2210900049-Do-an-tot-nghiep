@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/service.css') }}">
+
+<div class="service-detail-container">
+    <div class="service-header">
+        <h1>🍿 COMBO SIÊU TIẾT KIỆM</h1>
+        <p>Bắp giòn rụm - Nước mát lạnh - Cuộc vui bất tận.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>🌽 Bắp Rang Đa Hương Vị</h3>
+            <p>Nguyên liệu nhập khẩu 100% từ Mỹ, rang mới mỗi 15 phút để đảm bảo độ giòn tan.</p>
+            <ul class="detail-list">
+                <li>Vị Caramel truyền thống ngọt ngào</li>
+                <li>Vị Phô Mai đậm đà thơm ngậy</li>
+                <li>Vị Trà Xanh thanh mát độc đáo</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🥤 Đồ Uống Đa Dạng</h3>
+            <p>Từ nước ngọt có ga đến các dòng trà trái cây healthy cho sức khỏe.</p>
+            <ul class="detail-list">
+                <li>Pepsi, 7Up, Mirinda lạnh buốt</li>
+                <li>Trà Đào Cam Sả giải nhiệt</li>
+                <li>Nước suối tinh khiết đóng chai</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>💥 Combo Online Exclusive</h3>
+            <p>Tiết kiệm lên đến 40.000đ khi đặt kèm vé trực tuyến trên website KUNCINEMA.</p>
+            <ul class="detail-list">
+                <li>Combo Solo: 1 Bắp + 1 Nước (Tiết kiệm 15k)</li>
+                <li>Combo Couple: 1 Bắp + 2 Nước (Tiết kiệm 25k)</li>
+                <li>Combo Family: 2 Bắp + 4 Nước (Tiết kiệm 40k)</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🥨 Đồ Ăn Nhẹ (Snacks)</h3>
+            <p>Bổ sung năng lượng cho những bộ phim dài hơn 3 tiếng.</p>
+            <ul class="detail-list">
+                <li>Xúc xích Đức nướng nóng hổi</li>
+                <li>Khoai tây chiên giòn rụm</li>
+                <li>Kẹo dẻo & Chocolate nhập khẩu</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="back-btn-wrapper">
+        <a href="/" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>
+{% endblock %}

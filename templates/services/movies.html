@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/service.css') }}">
+
+<div class="service-detail-container">
+    <div class="service-header">
+        <h1>🎫 CHƯƠNG TRÌNH VÉ ƯU ĐÃI</h1>
+        <p>Thưởng thức điện ảnh đỉnh cao với chi phí tối ưu nhất tại KUNCINEMA.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>🔥 Ngày Hội Thứ Tư (Happy Wednesday)</h3>
+            <p>Mỗi thứ Tư hàng tuần, KUNCINEMA mang đến mức giá đồng giá cực sốc cho tất cả các suất chiếu.</p>
+            <ul class="detail-list">
+                <li>Đồng giá 45.000đ/vé 2D tại tất cả cụm rạp</li>
+                <li>Đồng giá 75.000đ/vé 3D & Ghế đôi</li>
+                <li>Áp dụng cho mọi đối tượng khách hàng</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🎓 Ưu Đãi Học Sinh - Sinh Viên</h3>
+            <p>Hỗ trợ các bạn trẻ tiếp cận điện ảnh với mức giá thân thiện nhất.</p>
+            <ul class="detail-list">
+                <li>Chỉ 55.000đ/vé cho chủ thẻ HSSV (dưới 22 tuổi)</li>
+                <li>Áp dụng cho tất cả các ngày trong tuần (trừ lễ Tết)</li>
+                <li>Tặng kèm voucher giảm 10% khi mua bắp nước</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🎬 Suất Chiếu Sớm (Sneak Show)</h3>
+            <p>Trở thành những người đầu tiên trên thế giới thưởng thức các siêu phẩm bom tấn.</p>
+            <ul class="detail-list">
+                <li>Xem trước ngày khởi chiếu chính thức từ 1-2 ngày</li>
+                <li>Tặng kèm quà tặng độc quyền từ nhà phát hành phim</li>
+                <li>Số lượng ghế có hạn, ưu tiên đặt Online</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🌙 Suất Chiếu Muộn (Late Show)</h3>
+            <p>Dành cho những "cú đêm" yêu thích không gian yên tĩnh của rạp phim về đêm.</p>
+            <ul class="detail-list">
+                <li>Giảm ngay 20% cho các suất chiếu sau 22:00</li>
+                <li>Combo bắp nước đêm chỉ từ 50.000đ</li>
+                <li>Trải nghiệm không gian rạp riêng tư hơn</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="back-btn-wrapper">
+        <a href="/" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>
+{% endblock %}

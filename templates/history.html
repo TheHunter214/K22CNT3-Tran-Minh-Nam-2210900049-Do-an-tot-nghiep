@@ -1,0 +1,171 @@
+{% extends 'layout.html' %}
+
+{% block title %}Lịch Sử Giao Dịch - KUNCINEMA{% endblock %}
+
+{% block content %}
+<style>
+    .history-page { padding: 40px 0; min-height: 80vh; background: #0b1220; }
+    
+    /* Thu gọn vùng hiển thị để thông tin không bị loãng */
+    .history-wrapper { max-width: 900px; margin: 0 auto; }
+
+    .history-card {
+        display: flex;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(107, 226, 255, 0.1);
+        border-radius: 16px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        border-left: 4px solid #6be2ff;
+    }
+    
+    .history-card:hover {
+        transform: translateY(-3px);
+        border-color: #6be2ff;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Phần ảnh bên trái */
+    .poster-side {
+        width: 130px;
+        min-width: 130px;
+        height: auto;
+    }
+    .history-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Nội dung chính */
+    .info-side {
+        flex-grow: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-right: 2px dashed rgba(255,255,255,0.1); /* Tạo hiệu ứng cuống vé */
+    }
+
+    .movie-title {
+        color: #6be2ff;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .info-group { margin-bottom: 5px; font-size: 0.9rem; color: #aab2bd; }
+    .info-group i { width: 22px; color: #6be2ff; }
+    .highlight-text { color: #fff; font-weight: 500; }
+
+    .combo-box {
+        background: rgba(241, 196, 15, 0.08);
+        border: 1px dashed rgba(241, 196, 15, 0.2);
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #f1c40f;
+    }
+
+    /* Phần giá tiền bên phải */
+    .price-side {
+        width: 200px;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(255,255,255,0.01);
+    }
+
+    .price-tag {
+        font-size: 1.4rem;
+        color: #ff6b6b;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    /* Sửa lại logic màu theo trạng thái Database của bạn */
+    .status-paid { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+    .status-pending { background: rgba(241, 196, 15, 0.2); color: #f1c40f; border: 1px solid #f1c40f; }
+
+    .booking-id { font-size: 0.7rem; color: #555; margin-top: 10px; }
+
+    @media (max-width: 768px) {
+        .history-card { flex-direction: column; }
+        .poster-side { width: 100%; height: 200px; }
+        .info-side { border-right: none; border-bottom: 2px dashed rgba(255,255,255,0.1); }
+        .price-side { width: 100%; }
+    }
+</style>
+
+<div class="history-page">
+    <div class="history-wrapper">
+        <h3 class="mb-5 text-light" style="border-left: 5px solid #6be2ff; padding-left: 15px;">
+            LỊCH SỬ GIAO DỊCH
+        </h3>
+
+        {% if history %}
+            {% for item in history %}
+            <div class="history-card">
+                <div class="poster-side">
+                    <img src="{{ url_for('static', filename='images/' + (item.poster_image if item.poster_image else 'default-movie.jpg')) }}" 
+                         class="history-poster" alt="Poster">
+                </div>
+
+                <div class="info-side">
+                    <div class="movie-title">{{ item.movie_title }}</div>
+                    
+                    <div class="info-group">
+                        <i class="far fa-clock"></i> Suất chiếu: <span class="highlight-text">{{ item.start_time }}</span>
+                    </div>
+                    <div class="info-group">
+                        <i class="fas fa-couch"></i> Ghế: <span class="highlight-text" style="color: #ff6b6b;">{{ item.seat_list }}</span>
+                    </div>
+                    <div class="info-group">
+                        <i class="far fa-calendar-alt"></i> Ngày thanh toán: <span>{{ item.paid_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+
+                    {% if item.combo_list %}
+                    <div class="combo-box">
+                        <i class="fas fa-utensils"></i> Đồ ăn: {{ item.combo_list | safe }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="price-side">
+                    <div class="price-tag">{{ "{:,.0f}".format(item.amount) }}đ</div>
+                    
+                    <span class="status-badge {% if item.status in ['paid', 'confirmed', 'success', 'completed'] %}status-paid{% else %}status-pending{% endif %}">
+                        {{ item.status }}
+                    </span>
+                    
+                    <div class="booking-id">Mã: #{{ item.booking_id }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-film fa-5x mb-4" style="color: rgba(255,255,255,0.1);"></i>
+                <h4 style="color: #9aa4b2;">Chưa có giao dịch nào</h4>
+                <a href="/" class="btn mt-3" style="background: #6be2ff; color: #000; border-radius: 30px; font-weight: bold; padding: 10px 30px;">
+                    ĐẶT VÉ NGAY
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

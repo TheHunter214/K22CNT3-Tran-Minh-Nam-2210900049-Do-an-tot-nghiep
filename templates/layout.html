@@ -23,6 +23,9 @@
       <a href="{{ url_for('upcoming') }}" class="nav-link">
         <i class="fas fa-calendar-alt"></i> Phim Sắp Chiếu
       </a>
+      <a href="{{ url_for('history') }}" class="nav-link">
+        <i class="fas fa-history"></i> Lịch Sử Đặt Vé
+      </a>
       {% if session.get('username') %}
         <span class="nav-user">
           <i class="fas fa-user-circle"></i> {{ session.username }}

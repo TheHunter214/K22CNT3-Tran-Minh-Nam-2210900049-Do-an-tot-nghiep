@@ -1,8 +1,3 @@
-/* ================================================================
-   BOOKING PAGE - OPTIMIZED FOR DYNAMIC DATA
-   ================================================================ */
-
-/* Thêm đoạn này vào đầu file booking.css để đảm bảo không bị lỗi màu */
 :root {
     --accent: #6be2ff;      /* Màu xanh cyan sáng */
     --accent-2: #6be2ff;    /* Màu đồng bộ cho các tiêu đề */
@@ -85,6 +80,78 @@
     padding: 28px;
     margin-bottom: 24px;
     backdrop-filter: blur(10px);
+}
+/* Container chứa 2 nút */
+.booking-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+/* Cấu trúc chung cho nút */
+.booking-actions button {
+    padding: 15px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Nút THANH TOÁN (Màu xanh Neon đặc trưng) */
+.btn-payment {
+    background: linear-gradient(135deg, #6be2ff 0%, #2980b9 100%);
+    color: #0b1220;
+    box-shadow: 0 0 20px rgba(107, 226, 255, 0.4);
+}
+
+.btn-payment:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(107, 226, 255, 0.6);
+    background: linear-gradient(135deg, #8cf0ff 0%, #3498db 100%);
+}
+
+/* Nút QUAY VỀ (Phong cách Glassmorphism) */
+.btn-back {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(5px);
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #6be2ff !important;
+    color: #6be2ff;
+    transform: translateY(-3px);
+}
+
+/* Hiệu ứng quét sáng (Shine effect) khi hover nút Payment */
+.btn-payment::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(30deg);
+    transition: all 0.6s ease;
+}
+
+.btn-payment:hover::after {
+    left: 120%;
 }
 
 .section-title {
@@ -345,7 +412,6 @@
     flex-direction: column;
     gap: 12px;
 }
-
 /* Scrollbar đẹp (Chrome / Edge) */
 .combo-list::-webkit-scrollbar {
     width: 6px;
@@ -360,6 +426,7 @@
 .combo-list::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 200, 255, 0.7);
 }
+
 
 
 

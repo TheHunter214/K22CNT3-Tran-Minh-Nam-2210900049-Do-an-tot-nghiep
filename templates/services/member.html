@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/service.css') }}">
+
+<div class="service-detail-container">
+    <div class="service-header">
+        <h1>⭐ THÀNH VIÊN KUNCINEMA VIP</h1>
+        <p>Gia nhập cộng đồng yêu điện ảnh lớn nhất với những đặc quyền vô hạn.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>💎 Hạng Thẻ & Tích Điểm</h3>
+            <p>KUNCINEMA có 3 cấp bậc thành viên: Silver, Gold và Diamond. Tỷ lệ tích điểm lên đến 10% giá trị hóa đơn.</p>
+            <ul class="detail-list">
+                <li>Silver: Tích 5% điểm thưởng</li>
+                <li>Gold: Tích 7% điểm thưởng + 2 vé sinh nhật</li>
+                <li>Diamond: Tích 10% điểm thưởng + Quà VIP cuối năm</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🎁 Quà Tặng Sinh Nhật</h3>
+            <p>Chúng tôi trân trọng ngày đặc biệt của bạn. Thành viên sẽ nhận được combo quà tặng qua Email/App.</p>
+            <ul class="detail-list">
+                <li>Miễn phí 01 Combo Solo (Bắp + Nước)</li>
+                <li>Tặng 01 Voucher giảm 50% cặp vé 2D/3D</li>
+                <li>Áp dụng trong suốt tháng sinh nhật của bạn</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🎟 Ưu Tiên Booking</h3>
+            <p>Không bao giờ bỏ lỡ những suất chiếu đầu tiên của các siêu phẩm Marvel, DC hay phim bom tấn Việt.</p>
+            <ul class="detail-list">
+                <li>Đặt vé sớm trước 03 ngày so với khách vãng lai</li>
+                <li>Giữ chỗ ngồi đẹp nhất (VIP Rows)</li>
+                <li>Hủy vé không mất phí trước 2 tiếng</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>⚡ Lối Đi Riêng (VIP Lane)</h3>
+            <p>Tiết kiệm thời gian chờ đợi tại rạp. Chúng tôi ưu tiên phục vụ bạn tại quầy vé và quầy bắp nước.</p>
+            <ul class="detail-list">
+                <li>Quầy thủ tục riêng cho hạng Diamond</li>
+                <li>Nhận bắp nước nhanh trong 2 phút</li>
+                <li>Phòng chờ VIP chuẩn 5 sao</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="back-btn-wrapper">
+        <a href="/register" class="back-home-btn" style="background: var(--accent); border-color: var(--accent); color: #fff;">
+            <i class="fas fa-user-plus"></i> ĐĂNG KÝ THÀNH VIÊN NGAY
+        </a>
+        <a href="/" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>
+{% endblock %}

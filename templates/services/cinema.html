@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/service.css') }}">
+
+<div class="service-detail-container">
+    <div class="service-header">
+        <h1>💳 HỆ THỐNG THANH TOÁN LINH HOẠT</h1>
+        <p>An toàn - Bảo mật - Tiện lợi. Hỗ trợ đa nền tảng thanh toán 24/7.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>📱 Ví Điện Tử (MoMo, ZaloPay, ShopeePay)</h3>
+            <p>Phương thức thanh toán nhanh chóng nhất với hàng ngàn voucher giảm giá mỗi tháng.</p>
+            <ul class="detail-list">
+                <li>Hoàn tiền ngay 10% (tối đa 30k) cho giao dịch đầu tiên</li>
+                <li>Xác nhận vé tức thì qua tin nhắn và Email</li>
+                <li>Thường xuyên có chương trình vé 9k, 19k qua ví</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🏦 Thẻ Ngân Hàng (Nội địa & Quốc tế)</h3>
+            <p>Hỗ trợ thanh toán qua cổng Napas với hơn 40 ngân hàng tại Việt Nam và thẻ quốc tế.</p>
+            <ul class="detail-list">
+                <li>Chấp nhận Visa, Mastercard, JCB, American Express</li>
+                <li>Bảo mật tuyệt đối với xác thực OTP 2 lớp</li>
+                <li>Lưu thông tin thẻ cho lần thanh toán sau (tùy chọn)</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🔍 Quét Mã QR (VNPAY-QR)</h3>
+            <p>Sử dụng ứng dụng Mobile Banking của ngân hàng để quét mã thanh toán trong chớp mắt.</p>
+            <ul class="detail-list">
+                <li>Không cần nhập thông tin thẻ phiền phức</li>
+                <li>Nhập mã giảm giá VNPAY trực tiếp trên App ngân hàng</li>
+                <li>Áp dụng tại cả quầy vé và khi đặt Online</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🛡 Chính Sách Bảo Mật Giao Dịch</h3>
+            <p>Sự an toàn của khách hàng là ưu tiên hàng đầu tại KUNCINEMA.</p>
+            <ul class="detail-list">
+                <li>Chứng chỉ bảo mật quốc tế PCI DSS</li>
+                <li>Mã hóa dữ liệu đầu cuối (End-to-end encryption)</li>
+                <li>Hệ thống xử lý lỗi hoàn tiền tự động trong 24h</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="back-btn-wrapper">
+        <a href="/" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>
+{% endblock %}
