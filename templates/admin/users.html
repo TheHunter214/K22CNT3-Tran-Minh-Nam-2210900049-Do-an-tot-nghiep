@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>👤 Quản lý người dùng</h2>
+
+<table border="1" width="100%">
+<tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Role</th>
+</tr>
+{% for u in users %}
+<tr>
+    <td>{{ u.id }}</td>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td>{{ u.role }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

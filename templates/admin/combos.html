@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>🍿 Quản lý combo</h2>
+
+<form method="POST" action="/admin/combos/add">
+    <input name="name" placeholder="Tên combo">
+    <input name="description" placeholder="Mô tả">
+    <input name="price" type="number" placeholder="Giá">
+    <button type="submit">Thêm combo</button>
+</form>
+
+<table border="1" width="100%">
+<tr>
+    <th>ID</th>
+    <th>Tên</th>
+    <th>Mô tả</th>
+    <th>Giá</th>
+</tr>
+{% for c in combos %}
+<tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.name }}</td>
+    <td>{{ c.description }}</td>
+    <td>{{ c.price }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Dùng chung style với Dashboard để đồng bộ */
+    .admin-container {
+        background: rgba(30, 30, 30, 0.7);
+        border-radius: 20px;
+        padding: 30px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        margin-top: 30px;
+    }
+
+    .admin-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        background: linear-gradient(to right, #fff, #aaa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 25px;
+    }
+
+    /* Style cho bảng */
+    .custom-table {
+        color: white;
+        background: transparent;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Tạo khoảng cách giữa các hàng */
+    }
+
+    .custom-table thead th {
+        border: none;
+        color: #ffc107; /* Màu vàng nhấn mạnh */
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    .custom-table tbody tr {
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s;
+    }
+
+    .custom-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.01);
+    }
+
+    .custom-table td {
+        vertical-align: middle;
+        border: none;
+        padding: 15px;
+    }
+
+    .btn-action {
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        transition: 0.3s;
+    }
+
+    /* Thanh điều hướng nhanh (Breadcrumb) */
+    .admin-nav {
+        margin-bottom: 20px;
+    }
+    .admin-nav a {
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .admin-nav a:hover { color: #ffc107; }
+</style>
+
+<div class="container">
+    <div class="admin-container text-white">
+        <div class="admin-nav">
+            <a href="/admin"><i class="fas fa-chart-line"></i> Dashboard</a> 
+            <span class="mx-2">/</span>
+            <span class="text-warning">Quản lý phim</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="admin-title m-0"><i class="fas fa-film me-2"></i> Danh sách phim</h2>
+            <a href="/admin/movies/add" class="btn btn-warning fw-bold">
+                <i class="fas fa-plus"></i> Thêm phim mới
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th width="50%">Tên phim</th>
+                        <th width="20%">Thời lượng</th>
+                        <th width="20%" class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movie in movies %}
+                    <tr>
+                        <td><span class="badge bg-secondary">#{{ movie.id }}</span></td>
+                        <td>
+                            <div class="fw-bold">{{ movie.title }}</div>
+                        </td>
+                        <td><i class="far fa-clock me-1 text-muted"></i> {{ movie.duration }} phút</td>
+                        <td class="text-center">
+                            <a href="/admin/movies/edit/{{ movie.id }}" class="btn btn-outline-info btn-action me-2">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <a href="/admin/movies/delete/{{ movie.id }}" 
+                               class="btn btn-outline-danger btn-action"
+                               onclick="return confirm('Xóa phim này sẽ mất dữ liệu lịch chiếu. Bạn có chắc không?')">
+                                <i class="fas fa-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

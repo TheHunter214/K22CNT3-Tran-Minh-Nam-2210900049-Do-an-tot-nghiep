@@ -1,10 +1,10 @@
-from os import abort
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
 import mysql.connector
 from config import Config
 import sys
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime
+from functools import wraps
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,7 +31,7 @@ except Exception as e:
     print('❌ ERROR: Không thể kết nối tới MySQL:', e, file=sys.stderr)
 
 # ======================
-# LỊCH SỬ ĐẶT VÉ (FIX LỖI ATTRIBUTEERROR)
+# LỊCH SỬ ĐẶT VÉ 
 # ======================
 @app.route('/history')
 def history():
@@ -81,10 +81,6 @@ def history():
 
     return render_template('history.html', history=history_data)
 
-# ======================
-# CÁC ROUTE CŨ (GIỮ NGUYÊN VÀ TỐI ƯU)
-# ======================
-
 @app.route("/")
 def home():
     conn = get_db()
@@ -127,10 +123,16 @@ def login():
         cursor.close()
         conn.close()
 
+        # Kiểm tra user có tồn tại trước khi check password
         if user and check_password_hash(user['password_hash'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
+            session['role'] = user['role'] # Gán role vào session sau khi login đúng
             flash('Đăng nhập thành công!', 'success')
+            
+            # Nếu là admin thì dẫn thẳng vào trang quản trị
+            if user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
             return redirect(url_for('home'))
         else:
             flash('Tên đăng nhập hoặc mật khẩu không chính xác!', 'danger')
@@ -295,6 +297,220 @@ def checkout():
     finally:
         cursor.close()
         conn.close()
+
+# =========================
+# CHECK ADMIN ROLE
+# =========================
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        # Kiểm tra session thay vì current_user
+        if 'user_id' not in session:
+            flash("Vui lòng đăng nhập!", "warning")
+            return redirect(url_for("login"))
+        if session.get('role') != 'admin':
+            flash("Bạn không có quyền admin!", "danger")
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return wrapper
+
+
+# =========================
+# ADMIN DASHBOARD
+# =========================
+@app.route("/admin")
+@admin_required # Bỏ @login_required vì decorator admin_required đã bao gồm kiểm tra login
+def admin_dashboard():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("SELECT COUNT(*) total FROM movies")
+    total_movies = cur.fetchone()["total"]
+
+    cur.execute("SELECT COUNT(*) total FROM users")
+    total_users = cur.fetchone()["total"]
+
+    cur.execute("SELECT COUNT(*) total FROM bookings")
+    total_bookings = cur.fetchone()["total"]
+
+    cur.execute("SELECT SUM(total_price) revenue FROM bookings WHERE status IN ('paid','confirmed','Success')")
+    res_revenue = cur.fetchone()
+    revenue = res_revenue["revenue"] if res_revenue["revenue"] else 0
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "admin/dashboard.html",
+        total_movies=total_movies,
+        total_users=total_users,
+        total_bookings=total_bookings,
+        revenue=revenue
+    )
+
+
+# =========================
+# ADMIN MOVIES MODULE
+# =========================
+@app.route("/admin/movies")
+@admin_required
+def admin_movies():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT * FROM movies ORDER BY id DESC")
+    movies = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template("admin/movies.html", movies=movies)
+
+
+@app.route("/admin/movies/delete/<int:id>")
+@admin_required
+def admin_delete_movie(id):
+    conn = get_db()
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM movies WHERE id=%s", (id,))
+        conn.commit()
+        flash("Đã xóa phim!", "success")
+    except Exception as e:
+        flash("Không thể xóa phim!", "danger")
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(url_for("admin_movies"))
+
+
+# =========================
+# ADMIN SHOWTIMES MODULE
+# =========================
+@app.route("/admin/showtimes")
+@admin_required
+def admin_showtimes():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT s.*, m.title AS movie_title
+        FROM showtimes s
+        JOIN movies m ON s.movie_id = m.id
+        ORDER BY s.start_time DESC
+    """)
+    showtimes = cur.fetchall()
+
+    cur.execute("SELECT id, title FROM movies")
+    movies = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("admin/showtimes.html", showtimes=showtimes, movies=movies)
+
+
+# =========================
+# ADMIN BOOKINGS MODULE
+# =========================
+@app.route("/admin/bookings")
+@admin_required
+def admin_bookings():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT b.id, u.username, b.total_price, b.status, b.booking_time
+        FROM bookings b
+        JOIN users u ON b.user_id = u.id
+        ORDER BY b.booking_time DESC
+    """)
+    bookings = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("admin/bookings.html", bookings=bookings)
+
+
+@app.route("/admin/bookings/delete/<int:id>")
+@admin_required
+def admin_delete_booking(id):
+    conn = get_db()
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM booking_seats WHERE booking_id=%s", (id,))
+        cur.execute("DELETE FROM booking_combos WHERE booking_id=%s", (id,))
+        cur.execute("DELETE FROM bookings WHERE id=%s", (id,))
+        conn.commit()
+        flash("Đã xóa đơn vé!", "success")
+    except Exception as e:
+        flash("Lỗi khi xóa đơn!", "danger")
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for("admin_bookings"))
+
+
+# =========================
+# ADMIN USERS MODULE
+# =========================
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT id, username, email, role FROM users")
+    users = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template("admin/users.html", users=users)
+
+@app.route("/admin/users/toggle-role/<int:id>")
+@admin_required
+def admin_toggle_role(id):
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("SELECT role FROM users WHERE id=%s", (id,))
+    role = cur.fetchone()[0]
+    new_role = "admin" if role == "user" else "user"
+
+    cur.execute("UPDATE users SET role=%s WHERE id=%s", (new_role, id))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    flash("Đã đổi quyền user!", "success")
+    return redirect(url_for("admin_users"))
+
+
+# =========================
+# ADMIN COMBOS MODULE
+# =========================
+@app.route("/admin/combos")
+@admin_required
+def admin_combos():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT * FROM combos")
+    combos = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template("admin/combos.html", combos=combos)
+
+
+@app.route("/admin/combos/delete/<int:id>")
+@admin_required
+def admin_delete_combo(id):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM combos WHERE id=%s", (id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    flash("Đã xóa combo!", "success")
+    return redirect(url_for("admin_combos"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
