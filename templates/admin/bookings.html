@@ -75,6 +75,9 @@
             <h2 class="text-white fw-bold mb-0">Hệ Thống Quản Lý Đặt Vé</h2>
             <p class="text-muted small">Xem và quản lý tất cả các giao dịch đặt vé của khách hàng</p>
         </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill">
+                <i class="fas fa-arrow-left me-2"></i>Về Trang Chủ Admin
+            </a>
         <div class="text-end">
             <span class="text-muted d-block small">TỔNG ĐƠN HÀNG</span>
             <h3 class="text-warning fw-bold">{{ bookings|length }}</h3>

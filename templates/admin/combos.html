@@ -1,28 +1,251 @@
 {% extends "layout.html" %}
+
 {% block content %}
-<h2>🍿 Quản lý combo</h2>
+<style>
+    /* Tổng thể */
+    :root {
+        --admin-bg: #121212;
+        --card-bg: #1e1e1e;
+        --accent: #ffc107;
+        --text-muted: #a0a0a0;
+        --border: #333333;
+    }
 
-<form method="POST" action="/admin/combos/add">
-    <input name="name" placeholder="Tên combo">
-    <input name="description" placeholder="Mô tả">
-    <input name="price" type="number" placeholder="Giá">
-    <button type="submit">Thêm combo</button>
-</form>
+    .admin-wrapper {
+        padding: 2rem;
+        background-color: var(--admin-bg);
+        min-height: 100vh;
+    }
 
-<table border="1" width="100%">
-<tr>
-    <th>ID</th>
-    <th>Tên</th>
-    <th>Mô tả</th>
-    <th>Giá</th>
-</tr>
-{% for c in combos %}
-<tr>
-    <td>{{ c.id }}</td>
-    <td>{{ c.name }}</td>
-    <td>{{ c.description }}</td>
-    <td>{{ c.price }}</td>
-</tr>
-{% endfor %}
-</table>
+    /* Thanh điều hướng Breadcrumb */
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--text-muted);
+        content: "→";
+    }
+    .breadcrumb a {
+        color: var(--accent);
+        transition: 0.3s;
+    }
+    .breadcrumb a:hover {
+        color: #fff;
+        text-shadow: 0 0 5px var(--accent);
+    }
+
+    /* Card thiết kế mới */
+    .glass-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .card-header-gradient {
+        background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-header-gradient h5 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Form input tùy chỉnh */
+    .custom-input-group .form-label {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modern-input {
+        background: #252525 !important;
+        border: 1px solid #444 !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        padding: 0.75rem 1rem !important;
+        transition: 0.3s !important;
+    }
+
+    .modern-input:focus {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important;
+    }
+
+    /* Nút bấm */
+    .btn-gold {
+        background: var(--accent);
+        color: #000;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        transition: 0.3s;
+        text-transform: uppercase;
+    }
+
+    .btn-gold:hover {
+        background: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    /* Bảng dữ liệu */
+    .modern-table {
+        margin: 0;
+    }
+
+    .modern-table thead th {
+        background: #252525;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        padding: 1rem 1.5rem;
+        border: none;
+    }
+
+    .modern-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: 0.3s;
+    }
+
+    .modern-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .modern-table td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        color: #e0e0e0;
+    }
+
+    .price-badge {
+        background: rgba(255, 193, 7, 0.1);
+        color: var(--accent);
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: 'Courier New', monospace;
+    }
+
+    .btn-delete-icon {
+        color: #ff4d4d;
+        background: rgba(255, 77, 77, 0.1);
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-delete-icon:hover {
+        background: #ff4d4d;
+        color: #fff;
+        transform: rotate(15deg);
+    }
+</style>
+
+<div class="admin-wrapper">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item active text-white fw-bold">Quản lý Combo</li>
+                </ol>
+            </nav>
+            <h2 class="text-white fw-bold"><i class="fas fa-popcorn text-warning me-2"></i>DANH MỤC COMBO & ĐỒ ĂN</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill">
+                <i class="fas fa-arrow-left me-2"></i>Về Trang Chủ Admin
+            </a>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-header-gradient">
+            <h5><i class="fas fa-plus-circle me-2"></i>Thêm sản phẩm mới</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="POST" action="/admin/combos/add" class="row g-4">
+                <div class="col-md-4 custom-input-group">
+                    <label class="form-label">Tên sản phẩm/Combo</label>
+                    <input name="name" class="form-control modern-input" placeholder="Nhập tên combo..." required>
+                </div>
+                <div class="col-md-4 custom-input-group">
+                    <label class="form-label">Mô tả thành phần</label>
+                    <input name="description" class="form-control modern-input" placeholder="Ví dụ: 1 bắp lớn + 2 Pepsi..." required>
+                </div>
+                <div class="col-md-2 custom-input-group">
+                    <label class="form-label">Giá bán (VNĐ)</label>
+                    <input name="price" type="number" class="form-control modern-input" placeholder="0" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="fas fa-save me-2"></i>Lưu lại
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-header-gradient">
+            <h5><i class="fas fa-list-ul me-2"></i>Danh sách Combo hiện tại</h5>
+            <span class="badge bg-dark border border-warning text-warning px-3">{{ combos|length }} Sản phẩm</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th>Tên Combo</th>
+                        <th>Chi tiết thành phần</th>
+                        <th>Đơn giá</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in combos %}
+                    <tr>
+                        <td class="text-center"><span class="text-muted">#{{ c.id }}</span></td>
+                        <td><strong class="text-white">{{ c.name }}</strong></td>
+                        <td><span class="text-muted small italic">{{ c.description }}</span></td>
+                        <td><span class="price-badge">{{ "{:,.0f}".format(c.price) }}đ</span></td>
+                        <td class="text-center">
+                            <a href="{{ url_for('admin_delete_combo', id=c.id) }}" 
+                               class="btn-delete-icon" 
+                               title="Xóa combo này"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa combo {{ c.name }}?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-shopping-basket fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có dữ liệu Combo nào trong hệ thống.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

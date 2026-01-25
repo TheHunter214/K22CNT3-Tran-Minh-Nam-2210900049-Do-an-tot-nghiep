@@ -1,48 +1,184 @@
 {% extends "layout.html" %}
-
 {% block content %}
-<div class="container admin-wrapper">
-    <div class="admin-container text-white">
-        <div class="admin-nav">
-            <a href="/admin"><i class="fas fa-chart-line"></i> Dashboard</a> 
-            <span class="mx-2">/</span>
-            <span class="text-warning">Quản lý suất chiếu</span>
-        </div>
+<style>
+    /* CSS đồng bộ phong cách Cinema Admin */
+    .admin-wrapper { padding: 2rem; background-color: #121212; min-height: 100vh; }
+    
+    .glass-card {
+        background: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="admin-title m-0"><i class="fas fa-calendar-alt me-2"></i> Lịch chiếu phim</h2>
-            <a href="/admin/showtimes/add" class="btn btn-warning fw-bold">
-                <i class="fas fa-plus"></i> Thêm suất chiếu
+    .card-header-gradient {
+        background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #333;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Form styling */
+    .modern-input, .modern-select {
+        background: #252525 !important;
+        border: 1px solid #444 !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .modern-input:focus, .modern-select:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important;
+    }
+
+    /* Table styling */
+    .modern-table thead th {
+        background: #252525;
+        color: #a0a0a0;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    .modern-table td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        color: #e0e0e0;
+        border-top: 1px solid #333;
+    }
+
+    .movie-title-cell { color: #ffc107; font-weight: 700; }
+    .screen-badge { background: #333; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }
+    .price-tag { color: #2ecc71; font-weight: bold; font-family: 'monospace'; }
+
+    .btn-gold {
+        background: #ffc107;
+        color: #000;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+    .btn-gold:hover { background: #fff; transform: translateY(-2px); }
+
+    .time-display { color: #00d2ff; font-weight: 500; }
+</style>
+
+<div class="admin-wrapper">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-warning text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Quản lý suất chiếu</li>
+                </ol>
+            </nav>
+            <h2 class="text-white fw-bold m-0"><i class="fas fa-calendar-alt text-warning me-2"></i>LỊCH CHIẾU PHIM</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Về Dashboard
             </a>
         </div>
+    </div>
 
+    <div class="glass-card">
+        <div class="card-header-gradient">
+            <h5 class="m-0 text-warning"><i class="fas fa-plus-circle me-2"></i>Tạo suất chiếu mới</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="POST" action="/admin/showtimes/add" class="row g-3">
+                <div class="col-md-3">
+                    <label class="text-muted small mb-2">Chọn bộ phim</label>
+                    <select name="movie_id" class="form-select modern-select" required>
+                        <option value="" disabled selected>-- Chọn phim --</option>
+                        {% for m in movies %}
+                        <option value="{{ m.id }}">{{ m.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small mb-2">Phòng chiếu</label>
+                    <select name="screen_id" class="form-select modern-select" required>
+                        {% for s in screens %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="text-muted small mb-2">Thời gian bắt đầu</label>
+                    <input type="datetime-local" name="start_time" class="form-control modern-input" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small mb-2">Giá vé (VNĐ)</label>
+                    <input type="number" name="price" class="form-control modern-input" placeholder="Ví dụ: 75000" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-gold w-100 py-2">
+                        <i class="fas fa-save me-1"></i> Thêm suất
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-header-gradient">
+            <h5 class="m-0 text-white"><i class="fas fa-list-ul me-2"></i>Danh sách suất chiếu hiện có</h5>
+            <span class="badge bg-dark border border-warning text-warning">{{ showtimes|length }} Suất chiếu</span>
+        </div>
         <div class="table-responsive">
-            <table class="table custom-table">
+            <table class="table modern-table mb-0">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Phim</th>
-                        <th>Thời gian chiếu</th>
-                        <th>Phòng</th>
-                        <th>Giá vé</th>
-                        <th class="text-center">Hành động</th>
+                        <th width="30%">Tên Phim</th>
+                        <th width="15%">Phòng</th>
+                        <th width="25%">Thời Gian Chiếu</th>
+                        <th width="15%">Giá Vé</th>
+                        <th width="15%" class="text-center">Thao Tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for show in showtimes %}
+                    {% for s in showtimes %}
                     <tr>
-                        <td><span class="badge bg-secondary">#{{ show.id }}</span></td>
-                        <td><div class="fw-bold text-info">{{ show.movie_title }}</div></td>
                         <td>
-                            <div class="small"><i class="far fa-calendar-alt me-1"></i> {{ show.date }}</div>
-                            <div class="fw-bold"><i class="far fa-clock me-1 text-warning"></i> {{ show.time }}</div>
+                            <div class="movie-title-cell">
+                                <i class="fas fa-film me-2 opacity-50"></i>{{ s.movie_title }}
+                            </div>
                         </td>
-                        <td><span class="badge border border-secondary text-white">{{ show.room_name }}</span></td>
-                        <td class="text-warning fw-bold">{{ show.price }} ₫</td>
+                        <td>
+                            <span class="screen-badge"><i class="fas fa-door-open me-1"></i> {{ s.screen_name }}</span>
+                        </td>
+                        <td>
+                            <div class="time-display">
+                                <i class="far fa-clock me-1"></i> {{ s.start_time }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="price-tag">
+                                {{ "{:,.0f}".format(s.price) if s.price else 0 }}đ
+                            </span>
+                        </td>
                         <td class="text-center">
-                            <a href="/admin/showtimes/delete/{{ show.id }}" class="btn btn-outline-danger btn-action">
-                                <i class="fas fa-trash"></i>
+                            <a href="/admin/showtimes/delete/{{ s.id }}" 
+                               class="btn btn-outline-danger btn-sm border-0"
+                               onclick="return confirm('Xác nhận xóa suất chiếu này?')">
+                                <i class="fas fa-trash-alt"></i>
                             </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-calendar-times fa-3x mb-3 opacity-25"></i>
+                            <p>Chưa có lịch chiếu nào được tạo.</p>
                         </td>
                     </tr>
                     {% endfor %}

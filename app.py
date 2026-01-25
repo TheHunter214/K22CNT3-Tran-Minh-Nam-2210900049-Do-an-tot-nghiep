@@ -352,6 +352,9 @@ def admin_dashboard():
 # =========================
 # ADMIN MOVIES MODULE
 # =========================
+# =========================
+# ADMIN MOVIES MODULE (Phim)
+# =========================
 @app.route("/admin/movies")
 @admin_required
 def admin_movies():
@@ -363,6 +366,58 @@ def admin_movies():
     conn.close()
     return render_template("admin/movies.html", movies=movies)
 
+@app.route("/admin/movies/add", methods=['POST'])
+@admin_required
+def admin_add_movie():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        duration = request.form.get('duration')
+        director = request.form.get('director')
+        release_date = request.form.get('release_date')
+        poster_image = request.form.get('poster_image')
+        description = request.form.get('description')
+
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO movies (title, duration, director, release_date, poster_image, description)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (title, duration, director, release_date, poster_image, description))
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash("Thêm phim mới thành công!", "success")
+    return redirect(url_for("admin_movies"))
+
+@app.route("/admin/movies/edit/<int:id>", methods=['GET', 'POST'])
+@admin_required
+def admin_edit_movie(id):
+    conn = get_db()
+    if request.method == 'POST':
+        title = request.form.get('title')
+        duration = request.form.get('duration')
+        director = request.form.get('director')
+        release_date = request.form.get('release_date')
+        poster_image = request.form.get('poster_image')
+        description = request.form.get('description')
+
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE movies SET title=%s, duration=%s, director=%s, release_date=%s, poster_image=%s, description=%s
+            WHERE id=%s
+        """, (title, duration, director, release_date, poster_image, description, id))
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash("Cập nhật thông tin phim thành công!", "success")
+        return redirect(url_for("admin_movies"))
+
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT * FROM movies WHERE id=%s", (id,))
+    movie = cur.fetchone()
+    cur.close()
+    conn.close()
+    return render_template("admin/movie_edit.html", movie=movie)
 
 @app.route("/admin/movies/delete/<int:id>")
 @admin_required
@@ -370,30 +425,31 @@ def admin_delete_movie(id):
     conn = get_db()
     cur = conn.cursor()
     try:
+        # Lưu ý: Nếu có khóa ngoại ở showtimes, cần xử lý delete cascade trong DB hoặc xóa thủ công ở đây
         cur.execute("DELETE FROM movies WHERE id=%s", (id,))
         conn.commit()
         flash("Đã xóa phim!", "success")
     except Exception as e:
-        flash("Không thể xóa phim!", "danger")
+        flash("Lỗi: Không thể xóa phim (có thể đang có suất chiếu liên quan)!", "danger")
     finally:
         cur.close()
         conn.close()
     return redirect(url_for("admin_movies"))
 
-
 # =========================
-# ADMIN SHOWTIMES MODULE
+# ADMIN SHOWTIMES MODULE (Suất chiếu)
 # =========================
 @app.route("/admin/showtimes")
 @admin_required
 def admin_showtimes():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-
+    # Lấy danh sách suất chiếu kèm tên phim và tên phòng
     cur.execute("""
-        SELECT s.*, m.title AS movie_title
+        SELECT s.*, m.title AS movie_title, sc.name AS screen_name
         FROM showtimes s
         JOIN movies m ON s.movie_id = m.id
+        JOIN screens sc ON s.screen_id = sc.id
         ORDER BY s.start_time DESC
     """)
     showtimes = cur.fetchall()
@@ -401,10 +457,44 @@ def admin_showtimes():
     cur.execute("SELECT id, title FROM movies")
     movies = cur.fetchall()
 
+    cur.execute("SELECT id, name FROM screens")
+    screens = cur.fetchall()
+
     cur.close()
     conn.close()
+    return render_template("admin/showtimes.html", showtimes=showtimes, movies=movies, screens=screens)
 
-    return render_template("admin/showtimes.html", showtimes=showtimes, movies=movies)
+@app.route("/admin/showtimes/add", methods=['POST'])
+@admin_required
+def admin_add_showtime():
+    movie_id = request.form.get('movie_id')
+    screen_id = request.form.get('screen_id')
+    start_time = request.form.get('start_time')
+    price = request.form.get('price')
+
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO showtimes (movie_id, screen_id, start_time, price)
+        VALUES (%s, %s, %s, %s)
+    """, (movie_id, screen_id, start_time, price))
+    conn.commit()
+    cur.close()
+    conn.close()
+    flash("Đã thêm suất chiếu mới!", "success")
+    return redirect(url_for("admin_showtimes"))
+
+@app.route("/admin/showtimes/delete/<int:id>")
+@admin_required
+def admin_delete_showtime(id):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM showtimes WHERE id=%s", (id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    flash("Đã xóa suất chiếu!", "warning")
+    return redirect(url_for("admin_showtimes"))
 
 
 # =========================
@@ -451,7 +541,7 @@ def admin_delete_booking(id):
 
 
 # =========================
-# ADMIN USERS MODULE
+# ADMIN USERS MODULE (Người dùng)
 # =========================
 @app.route("/admin/users")
 @admin_required
@@ -464,28 +554,22 @@ def admin_users():
     conn.close()
     return render_template("admin/users.html", users=users)
 
-@app.route("/admin/users/toggle-role/<int:id>")
+@app.route("/admin/users/delete/<int:id>")
 @admin_required
-def admin_toggle_role(id):
+def admin_delete_user(id):
     conn = get_db()
     cur = conn.cursor()
-
-    cur.execute("SELECT role FROM users WHERE id=%s", (id,))
-    role = cur.fetchone()[0]
-    new_role = "admin" if role == "user" else "user"
-
-    cur.execute("UPDATE users SET role=%s WHERE id=%s", (new_role, id))
+    # Không cho phép admin tự xóa chính mình (nếu cần)
+    cur.execute("DELETE FROM users WHERE id=%s", (id,))
     conn.commit()
-
     cur.close()
     conn.close()
-
-    flash("Đã đổi quyền user!", "success")
+    flash("Đã xóa tài khoản người dùng!", "success")
     return redirect(url_for("admin_users"))
 
 
 # =========================
-# ADMIN COMBOS MODULE
+# ADMIN COMBOS MODULE (Bắp nước)
 # =========================
 @app.route("/admin/combos")
 @admin_required
@@ -498,6 +582,22 @@ def admin_combos():
     conn.close()
     return render_template("admin/combos.html", combos=combos)
 
+@app.route("/admin/combos/add", methods=['POST'])
+@admin_required
+def admin_add_combo():
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('description')
+
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO combos (name, price, description) VALUES (%s, %s, %s)", 
+                (name, price, description))
+    conn.commit()
+    cur.close()
+    conn.close()
+    flash("Đã thêm combo bắp nước mới!", "success")
+    return redirect(url_for("admin_combos"))
 
 @app.route("/admin/combos/delete/<int:id>")
 @admin_required
@@ -508,7 +608,7 @@ def admin_delete_combo(id):
     conn.commit()
     cur.close()
     conn.close()
-    flash("Đã xóa combo!", "success")
+    flash("Đã xóa combo!", "info")
     return redirect(url_for("admin_combos"))
 
 
