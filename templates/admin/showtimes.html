@@ -1,12 +1,41 @@
 {% extends "layout.html" %}
+
 {% block content %}
 <style>
-    /* CSS đồng bộ phong cách Cinema Admin */
-    .admin-wrapper { padding: 2rem; background-color: #121212; min-height: 100vh; }
-    
+    /* 1. ĐỒNG BỘ BỘ BIẾN MÀU SẮC TỪ TRANG COMBO */
+    :root {
+        --admin-bg: #121212;
+        --card-bg: #1e1e1e;
+        --accent: #ffc107;
+        --text-muted: #a0a0a0;
+        --border: #333333;
+    }
+
+    .admin-wrapper {
+        padding: 2rem;
+        background-color: var(--admin-bg);
+        min-height: 100vh;
+    }
+
+    /* 2. BREADCRUMB PHONG CÁCH MỚI */
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--text-muted);
+        content: "→";
+    }
+    .breadcrumb a {
+        color: var(--accent);
+        transition: 0.3s;
+        text-decoration: none;
+    }
+    .breadcrumb a:hover {
+        color: #fff;
+        text-shadow: 0 0 5px var(--accent);
+    }
+
+    /* 3. CARD & HEADER GRADIENT */
     .glass-card {
-        background: #1e1e1e;
-        border: 1px solid #333;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         margin-bottom: 2rem;
@@ -16,13 +45,21 @@
     .card-header-gradient {
         background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
-    /* Form styling */
+    .card-header-gradient h5 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* 4. INPUT & SELECT ĐỒNG BỘ */
     .modern-input, .modern-select {
         background: #252525 !important;
         border: 1px solid #444 !important;
@@ -30,73 +67,115 @@
         border-radius: 10px !important;
         padding: 0.75rem 1rem !important;
     }
-
     .modern-input:focus, .modern-select:focus {
-        border-color: #ffc107 !important;
+        border-color: var(--accent) !important;
         box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important;
     }
 
-    /* Table styling */
-    .modern-table thead th {
-        background: #252525;
-        color: #a0a0a0;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 1px;
-        border: none;
-        padding: 1rem 1.5rem;
-    }
-
-    .modern-table td {
-        padding: 1.25rem 1.5rem;
-        vertical-align: middle;
-        color: #e0e0e0;
-        border-top: 1px solid #333;
-    }
-
-    .movie-title-cell { color: #ffc107; font-weight: 700; }
-    .screen-badge { background: #333; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }
-    .price-tag { color: #2ecc71; font-weight: bold; font-family: 'monospace'; }
-
+    /* 5. NÚT BẤM VÀNG (BTN-GOLD) */
     .btn-gold {
-        background: #ffc107;
+        background: var(--accent);
         color: #000;
         font-weight: 700;
         border: none;
         border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        transition: 0.3s;
+        text-transform: uppercase;
+    }
+    .btn-gold:hover {
+        background: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    /* 6. BẢNG DỮ LIỆU HIỆN ĐẠI */
+    .modern-table thead th {
+        background: #252525;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        padding: 1rem 1.5rem;
+        border: none;
+    }
+    .modern-table tbody tr {
+        border-bottom: 1px solid var(--border);
         transition: 0.3s;
     }
-    .btn-gold:hover { background: #fff; transform: translateY(-2px); }
+    .modern-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .modern-table td { padding: 1.25rem 1.5rem; vertical-align: middle; color: #e0e0e0; }
 
-    .time-display { color: #00d2ff; font-weight: 500; }
+    /* 7. BADGE & ICON TÙY CHỈNH */
+    .price-badge {
+        background: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: 'Courier New', monospace;
+    }
+    .screen-badge {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        font-size: 0.85rem;
+    }
+    .movie-highlight { color: var(--accent); font-weight: 700; }
+
+    /* NÚT XÓA XOAY ĐẶC TRƯNG */
+    .btn-delete-icon {
+        color: #ff4d4d;
+        background: rgba(255, 77, 77, 0.1);
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+    .btn-delete-icon:hover {
+        background: #ff4d4d;
+        color: #fff;
+        transform: rotate(15deg);
+    }
 </style>
 
 <div class="admin-wrapper">
-    <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-warning text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">Quản lý suất chiếu</li>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb" class="mb-1">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item active text-light fw-semibold">Lịch chiếu phim</li>
                 </ol>
             </nav>
-            <h2 class="text-white fw-bold m-0"><i class="fas fa-calendar-alt text-warning me-2"></i>LỊCH CHIẾU PHIM</h2>
+            <h2 class="text-white fw-bold d-flex align-items-center gap-2 mt-2">
+                <i class="fas fa-calendar-alt text-warning"></i> QUẢN LÝ SUẤT CHIẾU
+            </h2>
+            <p class="text-muted small mb-0">Thiết lập thời gian chiếu, phòng chiếu và giá vé cho từng bộ phim</p>
         </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Về Dashboard
-            </a>
+        <div>
+            <div class="px-3 py-2 rounded-3 border border-warning text-warning small bg-dark">
+                <i class="fas fa-clock me-1"></i> {{ showtimes|length }} suất chiếu đang chạy
+            </div>
         </div>
     </div>
 
     <div class="glass-card">
         <div class="card-header-gradient">
-            <h5 class="m-0 text-warning"><i class="fas fa-plus-circle me-2"></i>Tạo suất chiếu mới</h5>
+            <h5><i class="fas fa-plus-circle me-2"></i>Tạo suất chiếu mới</h5>
         </div>
         <div class="card-body p-4">
-            <form method="POST" action="/admin/showtimes/add" class="row g-3">
+            <form method="POST" action="/admin/showtimes/add" class="row g-4">
                 <div class="col-md-3">
-                    <label class="text-muted small mb-2">Chọn bộ phim</label>
+                    <label class="text-muted small mb-2 d-block">Chọn bộ phim</label>
                     <select name="movie_id" class="form-select modern-select" required>
                         <option value="" disabled selected>-- Chọn phim --</option>
                         {% for m in movies %}
@@ -105,7 +184,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="text-muted small mb-2">Phòng chiếu</label>
+                    <label class="text-muted small mb-2 d-block">Phòng chiếu</label>
                     <select name="screen_id" class="form-select modern-select" required>
                         {% for s in screens %}
                         <option value="{{ s.id }}">{{ s.name }}</option>
@@ -113,16 +192,16 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="text-muted small mb-2">Thời gian bắt đầu</label>
+                    <label class="text-muted small mb-2 d-block">Thời gian bắt đầu</label>
                     <input type="datetime-local" name="start_time" class="form-control modern-input" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="text-muted small mb-2">Giá vé (VNĐ)</label>
+                    <label class="text-muted small mb-2 d-block">Giá vé (VNĐ)</label>
                     <input type="number" name="price" class="form-control modern-input" placeholder="Ví dụ: 75000" required>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-gold w-100 py-2">
-                        <i class="fas fa-save me-1"></i> Thêm suất
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="fas fa-save me-2"></i>Lưu lại
                     </button>
                 </div>
             </form>
@@ -131,8 +210,8 @@
 
     <div class="glass-card">
         <div class="card-header-gradient">
-            <h5 class="m-0 text-white"><i class="fas fa-list-ul me-2"></i>Danh sách suất chiếu hiện có</h5>
-            <span class="badge bg-dark border border-warning text-warning">{{ showtimes|length }} Suất chiếu</span>
+            <h5><i class="fas fa-list-ul me-2"></i>Lịch chiếu hiện tại</h5>
+            <span class="badge bg-dark border border-warning text-warning px-3">Hệ thống Real-time</span>
         </div>
         <div class="table-responsive">
             <table class="table modern-table mb-0">
@@ -142,43 +221,45 @@
                         <th width="15%">Phòng</th>
                         <th width="25%">Thời Gian Chiếu</th>
                         <th width="15%">Giá Vé</th>
-                        <th width="15%" class="text-center">Thao Tác</th>
+                        <th class="text-center">Thao Tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in showtimes %}
                     <tr>
                         <td>
-                            <div class="movie-title-cell">
+                            <div class="movie-highlight">
                                 <i class="fas fa-film me-2 opacity-50"></i>{{ s.movie_title }}
                             </div>
                         </td>
                         <td>
-                            <span class="screen-badge"><i class="fas fa-door-open me-1"></i> {{ s.screen_name }}</span>
+                            <span class="screen-badge"><i class="fas fa-door-open me-2 text-warning"></i>{{ s.screen_name }}</span>
                         </td>
                         <td>
-                            <div class="time-display">
-                                <i class="far fa-clock me-1"></i> {{ s.start_time }}
+                            <div style="color: #00d2ff;">
+                                <i class="far fa-calendar-check me-2"></i>{{ s.start_time }}
                             </div>
                         </td>
                         <td>
-                            <span class="price-tag">
+                            <span class="price-badge">
                                 {{ "{:,.0f}".format(s.price) if s.price else 0 }}đ
                             </span>
                         </td>
                         <td class="text-center">
                             <a href="/admin/showtimes/delete/{{ s.id }}" 
-                               class="btn btn-outline-danger btn-sm border-0"
-                               onclick="return confirm('Xác nhận xóa suất chiếu này?')">
+                               class="btn-delete-icon" 
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa suất chiếu này?')">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            <i class="fas fa-calendar-times fa-3x mb-3 opacity-25"></i>
-                            <p>Chưa có lịch chiếu nào được tạo.</p>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-calendar-times fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có lịch chiếu nào được tạo.</p>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

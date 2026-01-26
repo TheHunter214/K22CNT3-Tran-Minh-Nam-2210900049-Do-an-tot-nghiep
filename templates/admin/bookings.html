@@ -2,151 +2,220 @@
 
 {% block content %}
 <style>
-    /* CSS Tùy chỉnh để làm đẹp giao diện */
-    .booking-card {
-        background: #1a1d20;
-        border-radius: 15px;
-        border: 1px solid #343a40;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        padding: 20px;
+    /* BỘ CSS ĐỒNG BỘ HỆ THỐNG CINEMA DARK */
+    :root {
+        --admin-bg: #121212;
+        --card-bg: #1e1e1e;
+        --accent: #ffc107;
+        --text-muted: #a0a0a0;
+        --border: #333333;
     }
-    .custom-table {
-        color: #e9ecef;
-        border-collapse: separate;
-        border-spacing: 0 10px;
-    }
-    .custom-table thead th {
-        border: none;
-        color: #adb5bd;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        padding-bottom: 15px;
-    }
-    .custom-table tbody tr {
-        background: #2b3035;
-        transition: transform 0.2s;
-    }
-    .custom-table tbody tr:hover {
-        transform: scale(1.01);
-        background: #32383e;
-    }
-    .custom-table td {
-        padding: 20px 15px;
-        vertical-align: middle;
-        border: none;
-    }
-    .custom-table td:first-child { border-radius: 10px 0 0 10px; }
-    .custom-table td:last-child { border-radius: 0 10px 10px 0; }
 
-    .status-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
+    .admin-wrapper {
+        padding: 2rem;
+        background-color: var(--admin-bg);
+        min-height: 100vh;
+    }
+
+    /* BREADCRUMB */
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); content: "→"; }
+    .breadcrumb a { color: var(--accent); transition: 0.3s; text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; text-shadow: 0 0 5px var(--accent); }
+
+    /* CARD THIẾT KẾ GLASSMORPHISM */
+    .glass-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        overflow: hidden;
+    }
+
+    .card-header-gradient {
+        background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* TABLE STYLING */
+    .modern-table thead th {
+        background: #252525;
+        color: var(--text-muted);
+        text-transform: uppercase;
         font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 1.25rem 1rem;
+        border: none;
     }
-    .status-paid { background: rgba(40, 167, 69, 0.2); color: #28a745; }
-    .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-    .status-error { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
 
-    .btn-delete {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 1px solid #dc3545;
-        padding: 8px 12px;
-        border-radius: 8px;
+    .modern-table tbody tr {
+        border-bottom: 1px solid var(--border);
         transition: 0.3s;
     }
-    .btn-delete:hover {
-        background: #dc3545;
-        color: white;
+
+    .modern-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
     }
+
+    .modern-table td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        color: #e0e0e0;
+    }
+
+    /* STATUS BADGES */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+    }
+    .status-paid { background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.2); }
+    .status-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.2); }
+    .status-error { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2); }
+
+    /* ACTION BUTTONS */
+    .action-btn-del {
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 1px solid transparent;
+        font-size: 0.85rem;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+    .action-btn-del:hover {
+        background: #dc3545;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
     .price-tag {
-        color: #ffc107;
+        color: var(--accent);
         font-family: 'Monaco', monospace;
         font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+    .user-icon-circle {
+        width: 35px;
+        height: 35px;
+        background: #333;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
     }
 </style>
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-white fw-bold mb-0">Hệ Thống Quản Lý Đặt Vé</h2>
-            <p class="text-muted small">Xem và quản lý tất cả các giao dịch đặt vé của khách hàng</p>
+<div class="admin-wrapper">
+    <div class="container-fluid">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-7">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1 small">
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold">Quản lý Đặt vé</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white fw-bold m-0">
+                    <i class="fas fa-ticket-alt text-warning me-2"></i>HỆ THỐNG ĐẶT VÉ
+                </h2>
+            </div>
+            <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                <div class="d-inline-flex align-items-center bg-dark p-2 px-3 rounded-pill border border-secondary shadow-sm">
+                    <span class="text-muted small me-3">TỔNG GIAO DỊCH:</span>
+                    <span class="text-warning fw-bold h5 mb-0">{{ bookings|length }}</span>
+                </div>
+            </div>
         </div>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill">
-                <i class="fas fa-arrow-left me-2"></i>Về Trang Chủ Admin
-            </a>
-        <div class="text-end">
-            <span class="text-muted d-block small">TỔNG ĐƠN HÀNG</span>
-            <h3 class="text-warning fw-bold">{{ bookings|length }}</h3>
-        </div>
-    </div>
 
-    <div class="booking-card">
-        <div class="table-responsive">
-            <table class="table custom-table">
-                <thead>
-                    <tr>
-                        <th>Mã Đơn</th>
-                        <th>Khách Hàng</th>
-                        <th>Thời Gian</th>
-                        <th>Tổng Thanh Toán</th>
-                        <th>Trạng Thái</th>
-                        <th class="text-center">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for b in bookings %}
-                    <tr>
-                        <td class="fw-bold text-info">#{{ b.id }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-secondary rounded-circle p-2 me-3">
-                                    <i class="fas fa-user text-white"></i>
+        <div class="glass-card">
+            <div class="card-header-gradient">
+                <h5 class="m-0 text-white font-monospace small text-uppercase">
+                    <i class="fas fa-database me-2 text-warning"></i>Booking_Transaction_Logs
+                </h5>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                    <i class="fas fa-reply me-1"></i> Quay lại
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table modern-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Mã Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th>Thời Gian</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bookings %}
+                        <tr>
+                            <td class="ps-4 fw-bold" style="color: #0dcaf0;">#{{ b.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-icon-circle me-3">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-bold mb-0">{{ b.username }}</div>
+                                        <div class="text-muted" style="font-size: 0.7rem;">UID: {{ b.user_id }}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-white fw-bold">{{ b.username }}</div>
-                                    <div class="text-muted small">ID khách: {{ b.user_id }}</div>
+                            </td>
+                            <td>
+                                <div class="small text-white-50">
+                                    <i class="far fa-calendar-alt me-1 text-warning"></i> {{ b.booking_time }}
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="text-muted"><i class="far fa-clock me-1"></i> {{ b.booking_time }}</span>
-                        </td>
-                        <td>
-                            <span class="price-tag h5">
-                                {{ "{:,.0f}".format(b.total_price) if b.total_price else 0 }}đ
-                            </span>
-                        </td>
-                        <td>
-                            {% if b.status in ['Success', 'Paid', 'paid', 'confirmed'] %}
-                                <span class="status-badge status-paid"><i class="fas fa-check-circle me-1"></i> Đã Thanh Toán</span>
-                            {% elif b.status in ['Pending', 'Chờ xử lý'] %}
-                                <span class="status-badge status-pending"><i class="fas fa-hourglass-half me-1"></i> Chờ Xử Lý</span>
-                            {% else %}
-                                <span class="status-badge status-error"><i class="fas fa-times-circle me-1"></i> {{ b.status }}</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ url_for('admin_delete_booking', id=b.id) }}" 
-                               class="btn btn-delete" 
-                               onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa đơn hàng #{{ b.id }} này không? Hành động này không thể hoàn tác!')">
-                                <i class="fas fa-trash-alt me-1"></i> Xóa Đơn
-                            </a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-5">
-                            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="100" class="mb-3 opacity-50">
-                            <p class="text-muted">Chưa có dữ liệu đặt vé nào trong hệ thống.</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                            <td>
+                                <span class="price-tag">
+                                    {{ "{:,.0f}".format(b.total_price) if b.total_price else 0 }}đ
+                                </span>
+                            </td>
+                            <td>
+                                {% if b.status in ['Success', 'Paid', 'paid', 'confirmed'] %}
+                                    <span class="status-badge status-paid"><i class="fas fa-check-circle me-1"></i> Thành công</span>
+                                {% elif b.status in ['Pending', 'Chờ xử lý'] %}
+                                    <span class="status-badge status-pending"><i class="fas fa-clock me-1"></i> Chờ xử lý</span>
+                                {% else %}
+                                    <span class="status-badge status-error"><i class="fas fa-exclamation-triangle me-1"></i> {{ b.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ url_for('admin_delete_booking', id=b.id) }}" 
+                                   class="action-btn-del" 
+                                   onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa đơn hàng #{{ b.id }}? Thao tác này sẽ xóa vĩnh viễn dữ liệu giao dịch!')">
+                                    <i class="fas fa-trash-alt me-1"></i> Xóa
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="opacity-25 mb-3">
+                                    <i class="fas fa-folder-open fa-4x text-muted"></i>
+                                </div>
+                                <h5 class="text-muted">Chưa có giao dịch nào được ghi nhận</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

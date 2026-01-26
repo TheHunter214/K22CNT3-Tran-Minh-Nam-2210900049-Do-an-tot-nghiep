@@ -2,106 +2,137 @@
 
 {% block content %}
 <style>
-    /* Reuse styles from previous pages for consistency */
-    .admin-wrapper { padding: 2rem; background-color: #121212; min-height: 100vh; }
-    
+    /* BỘ CSS ĐỒNG BỘ HOÀN TOÀN VỚI MOVIES.HTML */
+    :root {
+        --admin-bg: #121212;
+        --card-bg: #1e1e1e;
+        --accent: #ffc107;
+        --text-muted: #a0a0a0;
+        --border: #333333;
+    }
+
+    .admin-wrapper {
+        padding: 2rem;
+        background-color: var(--admin-bg);
+        min-height: 100vh;
+    }
+
+    /* BREADCRUMB & HEADER */
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); content: "→"; }
+    .breadcrumb a { color: var(--accent); transition: 0.3s; text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; text-shadow: 0 0 5px var(--accent); }
+
+    /* CARD THIẾT KẾ GLASSMORPHISM */
     .glass-card {
-        background: #1e1e1e;
-        border: 1px solid #333;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        margin-bottom: 2rem;
         overflow: hidden;
     }
 
     .card-header-gradient {
         background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
-    /* Role Badges */
-    .badge-role {
-        padding: 5px 12px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .role-admin { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid #ffc107; }
-    .role-user { background: rgba(13, 110, 253, 0.15); color: #0d6efd; border: 1px solid #0d6efd; }
-    .role-staff { background: rgba(25, 135, 84, 0.15); color: #198754; border: 1px solid #198754; }
-
-    /* Avatar giả lập */
+    /* AVATAR GIẢ LẬP (SỬ DỤNG LẠI STYLE SANG TRỌNG) */
     .user-avatar {
-        width: 35px;
-        height: 35px;
-        background: #333;
-        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #333, #222);
+        border: 1px solid #444;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 12px;
-        color: #ffc107;
+        color: var(--accent);
         font-weight: bold;
     }
 
-    .modern-table td {
-        padding: 1rem 1.5rem;
-        vertical-align: middle;
-        color: #e0e0e0;
-        border-top: 1px solid #333;
+    /* TABLE & BADGES */
+    .modern-table thead th {
+        background: #252525;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        padding: 1.25rem 1rem;
+        border: none;
     }
 
-    .btn-action {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        margin: 0 3px;
-        transition: 0.3s;
+    .modern-table tbody tr { border-bottom: 1px solid var(--border); transition: 0.3s; }
+    .modern-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .modern-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #e0e0e0;
     }
-    .btn-delete { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
-    .btn-delete:hover { background: #dc3545; color: #fff; }
+
+    /* ROLE BADGES NEON */
+    .badge-role {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .role-admin { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+    .role-user { background: rgba(13, 110, 253, 0.1); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.3); }
+
+    /* ACTION BUTTONS (GIỐNG NÚT XÓA BÊN MOVIES) */
+    .action-btn {
+        width: 38px; height: 38px; display: inline-flex;
+        align-items: center; justify-content: center;
+        border-radius: 10px; transition: 0.3s; text-decoration: none;
+    }
+    .btn-delete-icon { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid transparent; }
+    .btn-delete-icon:hover { 
+        background: #ff4d4d; color: #fff; 
+        transform: rotate(15deg); 
+        box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
+    }
 </style>
 
 <div class="admin-wrapper">
     <div class="row align-items-center mb-4">
         <div class="col-md-8">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-warning text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">Quản lý người dùng</li>
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item active text-white fw-bold">Người dùng</li>
                 </ol>
             </nav>
-            <h2 class="text-white fw-bold m-0"><i class="fas fa-users-cog text-warning me-2"></i>DANH SÁCH NGƯỜI DÙNG</h2>
+            <h2 class="text-white fw-bold m-0"><i class="fas fa-users-cog text-warning me-2"></i>QUẢN LÝ TÀI KHOẢN</h2>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại Dashboard
-            </a>
+            <div class="px-3 py-2 rounded-3 border border-warning text-warning d-inline-block bg-dark small shadow-sm">
+                <i class="fas fa-user-check me-2"></i>{{ users|length }} Thành viên
+            </div>
         </div>
     </div>
 
     <div class="glass-card">
         <div class="card-header-gradient">
-            <h5 class="m-0 text-white">Tất cả tài khoản</h5>
-            <span class="badge bg-warning text-dark">{{ users|length }} Thành viên</span>
+            <h5 class="m-0 text-white"><i class="fas fa-list-ul me-2 text-warning"></i>Danh sách người dùng</h5>
         </div>
         
         <div class="table-responsive">
             <table class="table modern-table mb-0">
                 <thead>
-                    <tr class="bg-dark text-muted" style="font-size: 0.8rem;">
-                        <th class="ps-4">THÔNG TIN CƠ BẢN</th>
-                        <th>EMAIL</th>
-                        <th>VAI TRÒ</th>
-                        <th>TRẠNG THÁI</th>
-                        <th class="text-center">THAO TÁC</th>
+                    <tr>
+                        <th class="ps-4">Thông tin</th>
+                        <th>Email liên hệ</th>
+                        <th>Quyền hạn</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,44 +140,41 @@
                     <tr>
                         <td class="ps-4">
                             <div class="d-flex align-items-center">
-                                <div class="user-avatar">
+                                <div class="user-avatar shadow-sm">
                                     {{ u.username[0] | upper }}
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-white">{{ u.username }}</div>
-                                    <div class="small text-muted">ID: #{{ u.id }}</div>
+                                    <div class="fw-bold text-white mb-0">{{ u.username }}</div>
+                                    <div class="text-muted small">ID: #{{ u.id }}</div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span class="text-muted"><i class="far fa-envelope me-2"></i>{{ u.email }}</span>
+                            <div class="text-white-50"><i class="far fa-envelope me-2 text-warning"></i>{{ u.email }}</div>
                         </td>
                         <td>
                             {% if u.role == 'admin' %}
-                                <span class="badge-role role-admin">Quản trị viên</span>
+                                <span class="badge-role role-admin"><i class="fas fa-crown me-1"></i> Admin</span>
                             {% elif u.role == 'staff' %}
-                                <span class="badge-role role-staff">Nhân viên</span>
+                                <span class="badge-role role-staff"><i class="fas fa-user-tie me-1"></i> Staff</span>
                             {% else %}
-                                <span class="badge-role role-user">Khách hàng</span>
+                                <span class="badge-role role-user"><i class="fas fa-user me-1"></i> Customer</span>
                             {% endif %}
                         </td>
                         <td>
                             <span class="text-success small"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> Hoạt động</span>
                         </td>
                         <td class="text-center">
+                            {% if u.role != 'admin' %}
                             <a href="/admin/users/delete/{{ u.id }}" 
-                               class="btn-action btn-delete" 
+                               class="action-btn btn-delete-icon" 
                                title="Xóa người dùng"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản {{ u.username }} không? Người dùng này sẽ mất toàn bộ lịch sử đặt vé!')">
+                               onclick="return confirm('Xóa tài khoản {{ u.username }}? Lưu ý: Hành động này không thể hoàn tác!')">
                                 <i class="fas fa-user-minus"></i>
                             </a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i>
-                            <p>Không tìm thấy người dùng nào trong hệ thống.</p>
+                            {% else %}
+                            <i class="fas fa-shield-alt text-muted" title="Hệ thống bảo vệ"></i>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

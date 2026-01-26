@@ -2,12 +2,30 @@
 
 {% block content %}
 <style>
-    /* CSS STYLE ADMIN THEME */
-    .admin-wrapper { padding: 2rem; background-color: #121212; min-height: 100vh; }
-    
+    /* 1. BỘ BIẾN MÀU ĐỒNG BỘ */
+    :root {
+        --admin-bg: #121212;
+        --card-bg: #1e1e1e;
+        --accent: #ffc107;
+        --text-muted: #a0a0a0;
+        --border: #333333;
+    }
+
+    .admin-wrapper {
+        padding: 2rem;
+        background-color: var(--admin-bg);
+        min-height: 100vh;
+    }
+
+    /* 2. BREADCRUMB & HEADER */
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); content: "→"; }
+    .breadcrumb a { color: var(--accent); transition: 0.3s; text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; text-shadow: 0 0 5px var(--accent); }
+
+    /* 3. CARD & INPUT */
     .glass-card {
-        background: #1e1e1e;
-        border: 1px solid #333;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         margin-bottom: 2rem;
@@ -17,13 +35,12 @@
     .card-header-gradient {
         background: linear-gradient(90deg, #2b2b2b, #1e1e1e);
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid var(--border);
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
     }
 
-    /* Input Styling */
     .modern-input, .modern-textarea {
         background: #252525 !important;
         border: 1px solid #444 !important;
@@ -31,92 +48,79 @@
         border-radius: 10px !important;
         padding: 0.75rem 1rem !important;
     }
-    .modern-input:focus, .modern-textarea:focus {
-        border-color: #ffc107 !important;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important;
-    }
 
-    /* Poster Preview */
+    .modern-input:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important; }
+
+    /* 4. POSTER & TABLE */
     .poster-thumb {
-        width: 60px;
-        height: 90px;
+        width: 50px;
+        height: 75px;
         object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid #444;
-        background: #000;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
-    /* Table & Buttons */
-    .modern-table td {
-        vertical-align: middle;
-        padding: 1rem;
-        color: #e0e0e0;
-        border-top: 1px solid #333;
-    }
-    .modern-table th {
+    .modern-table thead th {
         background: #252525;
-        color: #a0a0a0;
+        color: var(--text-muted);
         text-transform: uppercase;
         font-size: 0.75rem;
+        letter-spacing: 1px;
+        padding: 1.25rem 1rem;
         border: none;
-        padding: 1rem;
     }
 
+    .modern-table tbody tr { border-bottom: 1px solid var(--border); transition: 0.3s; }
+    .modern-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .movie-title { color: var(--accent); font-weight: 700; font-size: 1rem; }
+
+    /* 5. NÚT BẤM (CẬP NHẬT HIỆU ỨNG XOAY) */
     .btn-gold {
-        background: #ffc107;
-        color: #000;
-        font-weight: 700;
-        border: none;
-        border-radius: 10px;
-        transition: 0.3s;
+        background: var(--accent); color: #000; font-weight: 700;
+        border: none; border-radius: 10px; padding: 0.75rem 1.5rem; transition: 0.3s;
     }
-    .btn-gold:hover { background: #fff; transform: translateY(-2px); }
+    .btn-gold:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); }
 
-    .btn-icon-action {
-        width: 35px;
-        height: 35px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        margin-right: 5px;
-        transition: 0.2s;
+    .action-btn {
+        width: 38px; height: 38px; display: inline-flex;
+        align-items: center; justify-content: center;
+        border-radius: 10px; transition: 0.3s; text-decoration: none; margin: 0 3px;
     }
-    .btn-edit { background: rgba(13, 110, 253, 0.15); color: #0d6efd; }
-    .btn-edit:hover { background: #0d6efd; color: #fff; }
-    .btn-delete { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
-    .btn-delete:hover { background: #dc3545; color: #fff; }
+    .btn-edit-icon { background: rgba(255, 193, 7, 0.1); color: var(--accent); }
+    .btn-edit-icon:hover { background: var(--accent); color: #000; }
+
+    .btn-delete-icon { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; }
+    .btn-delete-icon:hover { background: #ff4d4d; color: #fff; transform: rotate(15deg); }
 </style>
 
 <div class="admin-wrapper">
-    <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-warning text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">Quản lý Phim</li>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb" class="mb-1">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item active text-white fw-semibold">Quản lý phim</li>
                 </ol>
             </nav>
-            <h2 class="text-white fw-bold m-0"><i class="fas fa-film text-warning me-2"></i>DANH SÁCH PHIM</h2>
+            <h2 class="text-white fw-bold mt-2"><i class="fas fa-film text-warning me-2"></i>DANH SÁCH PHIM</h2>
         </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Về Dashboard
-            </a>
+        <div class="px-3 py-2 rounded-3 border border-warning text-warning small bg-dark">
+            <i class="fas fa-video me-1"></i> {{ movies|length }} phim trong kho
         </div>
     </div>
 
     <div class="glass-card">
-        <div class="card-header-gradient" data-bs-toggle="collapse" href="#addMovieForm" role="button" aria-expanded="false" style="cursor: pointer;">
-            <h5 class="m-0 text-warning"><i class="fas fa-plus-circle me-2"></i>Thêm Phim Mới</h5>
-            <i class="fas fa-chevron-down text-white"></i>
+        <div class="card-header-gradient" data-bs-toggle="collapse" href="#addMovieForm" style="cursor: pointer;">
+            <h5 class="m-0"><i class="fas fa-plus-circle me-2"></i>Thêm Phim Mới</h5>
+            <i class="fas fa-chevron-down text-muted"></i>
         </div>
-        <div class="collapse show" id="addMovieForm">
-            <div class="card-body p-4">
+        <div class="collapse" id="addMovieForm"> <div class="card-body p-4">
                 <form method="POST" action="/admin/movies/add" class="row g-3">
                     <div class="col-md-6">
                         <label class="text-muted small mb-2">Tên phim</label>
-                        <input name="title" class="form-control modern-input" placeholder="Nhập tên phim..." required>
+                        <input name="title" class="form-control modern-input" placeholder="Ví dụ: Avatar 2" required>
                     </div>
                     <div class="col-md-3">
                         <label class="text-muted small mb-2">Thời lượng (phút)</label>
@@ -126,25 +130,16 @@
                         <label class="text-muted small mb-2">Đạo diễn</label>
                         <input name="director" class="form-control modern-input" placeholder="Tên đạo diễn...">
                     </div>
-                    
-                    <div class="col-md-6">
-                        <label class="text-muted small mb-2">Link Ảnh Poster</label>
-                        <input name="poster_image" class="form-control modern-input" placeholder="https://example.com/poster.jpg">
-                    </div>
                     <div class="col-md-3">
                         <label class="text-muted small mb-2">Ngày khởi chiếu</label>
                         <input name="release_date" type="date" class="form-control modern-input" required>
                     </div>
-                    
                     <div class="col-md-12">
                         <label class="text-muted small mb-2">Mô tả nội dung</label>
-                        <textarea name="description" rows="2" class="form-control modern-textarea" placeholder="Tóm tắt nội dung phim..."></textarea>
+                        <textarea name="description" rows="3" class="form-control modern-textarea" placeholder="Tóm tắt phim..."></textarea>
                     </div>
-                    
-                    <div class="col-12 text-end mt-3">
-                        <button type="submit" class="btn btn-gold px-4 py-2">
-                            <i class="fas fa-save me-2"></i>Lưu Phim
-                        </button>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-gold px-5"><i class="fas fa-save me-2"></i>Lưu Phim</button>
                     </div>
                 </form>
             </div>
@@ -153,53 +148,34 @@
 
     <div class="glass-card">
         <div class="card-header-gradient">
-            <h5 class="m-0 text-white"><i class="fas fa-list me-2"></i>Phim Đang Có</h5>
-            <span class="badge bg-warning text-dark">{{ movies|length }} Phim</span>
+            <h5 class="text-white"><i class="fas fa-th-list me-2"></i>Phim Đang Có</h5>
         </div>
+        
         <div class="table-responsive">
             <table class="table modern-table mb-0">
                 <thead>
                     <tr>
-                        <th width="5%">ID</th>
-                        <th width="10%">Poster</th>
-                        <th width="30%">Thông tin phim</th>
-                        <th width="20%">Chi tiết</th>
-                        <th width="20%">Ngày chiếu</th>
-                        <th width="15%" class="text-center">Thao tác</th>
+                        <th class="text-center">ID</th>
+                        <th>Thông tin phim</th>
+                        <th>Thời lượng</th>
+                        <th>Ngày chiếu</th>
+                        <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for m in movies %}
                     <tr>
-                        <td><span class="text-muted">#{{ m.id }}</span></td>
+                        <td class="text-center text-muted">#{{ m.id }}</td>
                         <td>
-                            <img src="{{ m.poster_image }}" class="poster-thumb" onerror="this.src='https://via.placeholder.com/60x90?text=No+Img'">
+                            <div class="movie-title">{{ m.title }}</div>
+                            <div class="small text-muted"><i class="fas fa-user-tie me-1"></i>{{ m.director }}</div>
                         </td>
-                        <td>
-                            <div class="fw-bold text-white mb-1" style="font-size: 1.1rem;">{{ m.title }}</div>
-                            <div class="small text-muted"><i class="fas fa-video me-1"></i> {{ m.director }}</div>
-                        </td>
-                        <td>
-                            <div class="small text-muted mb-1"><i class="far fa-clock me-1"></i> {{ m.duration }} phút</div>
-                        </td>
-                        <td>
-                            <div class="text-warning small"><i class="far fa-calendar-alt me-1"></i> {{ m.release_date }}</div>
-                        </td>
+                        <td><span class="badge bg-dark border border-secondary fw-normal">{{ m.duration }} phút</span></td>
+                        <td><div class="text-white-50"><i class="far fa-calendar-alt me-2 text-warning"></i>{{ m.release_date }}</div></td>
                         <td class="text-center">
-                            <a href="/admin/movies/edit/{{ m.id }}" class="btn-icon-action btn-edit" title="Sửa phim">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <a href="/admin/movies/delete/{{ m.id }}" 
-                               class="btn-icon-action btn-delete" 
-                               title="Xóa phim"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa phim {{ m.title }}? Lưu ý: Các suất chiếu liên quan cũng sẽ bị ảnh hưởng!')">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                            <a href="/admin/movies/edit/{{ m.id }}" class="action-btn btn-edit-icon" title="Sửa"><i class="fas fa-pen-nib"></i></a>
+                            <a href="/admin/movies/delete/{{ m.id }}" class="action-btn btn-delete-icon" onclick="return confirm('Xóa phim này?')" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                         </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">Chưa có phim nào trong hệ thống.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

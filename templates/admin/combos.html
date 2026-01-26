@@ -157,22 +157,43 @@
 </style>
 
 <div class="admin-wrapper">
-    <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li class="breadcrumb-item active text-white fw-bold">Quản lý Combo</li>
+
+    <!-- HEADER ADMIN COMBO -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+
+        <!-- LEFT: Title + Breadcrumb -->
+        <div>
+            <nav aria-label="breadcrumb" class="mb-1">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="text-warning text-decoration-none">
+                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active text-light fw-semibold">
+                        Quản lý Combo
+                    </li>
                 </ol>
             </nav>
-            <h2 class="text-white fw-bold"><i class="fas fa-popcorn text-warning me-2"></i>DANH MỤC COMBO & ĐỒ ĂN</h2>
+
+            <h2 class="text-white fw-bold d-flex align-items-center gap-2 mt-2">
+                <i class="fas fa-popcorn text-warning"></i>
+                Quản lý Combo & Đồ ăn
+            </h2>
+
+            <p class="text-muted small mb-0">
+                Quản lý danh sách combo, giá bán và thông tin sản phẩm trong hệ thống
+            </p>
         </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill">
-                <i class="fas fa-arrow-left me-2"></i>Về Trang Chủ Admin
-            </a>
+        <div class="d-flex align-items-center gap-2">
+            <!-- Stats -->
+            <div class="px-3 py-2 rounded-3 border border-warning text-warning small bg-dark">
+                <i class="fas fa-box-open me-1"></i>
+                {{ combos|length }} combo
+            </div>
         </div>
     </div>
+
 
     <div class="glass-card">
         <div class="card-header-gradient">
